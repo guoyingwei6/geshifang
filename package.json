@@ -1,0 +1,10 @@
+{
+  "name": "geshifang",
+  "version": "1.0.0",
+  "description": "格式坊 - 公众号专业排版工具",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["wechat", "typeset", "format"],
+  "license": "MIT"
+}

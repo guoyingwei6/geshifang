@@ -8,7 +8,17 @@
 
 ## 快速开始
 
+下载
+
+```
+git clone https://github.com/moduwusuowei/geshifang.git
+```
+
+
+
 ```bash
+cd geshifang
+
 npm start
 # 或
 node server.js
@@ -275,6 +285,10 @@ docker run -d -p 8899:8899 geshifang
 2.添加目录
 
 ![image-20260617175218499](README.assets/image-20260617175218499.png)
+
+
+
+**Addr:** https://github.com/moduwusuowei/geshifang.git
 
 
 
