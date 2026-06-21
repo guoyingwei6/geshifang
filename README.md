@@ -216,8 +216,10 @@ window.GS_CONFIG = {
 ### GitHub Pages
 
 1. 将代码推送到 GitHub 仓库
-2. Settings → Pages → 源选择 `main` 分支，目录选 `/`（根目录）
-3. 或使用 GitHub Actions 自动部署
+2. Settings → Pages → Build and deployment → Source 选择 **GitHub Actions**
+3. 推送到 `master` 分支后会自动部署到 `https://guoyingwei6.github.io/geshifang/`
+
+如果仍然使用分支部署方式，源选择 `master` 分支，目录选 `/`（根目录）。
 
 ### Nginx 部署（VPS 场景）
 
@@ -293,4 +295,3 @@ docker run -d -p 8899:8899 geshifang
 
 
 喜欢就添个star，为我的创作提供更强的动力......
-
