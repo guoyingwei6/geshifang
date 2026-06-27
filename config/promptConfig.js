@@ -26,7 +26,7 @@ export const systemPrompt = `# 角色
 
 ## 加粗规则（仅对以下内容加粗）
 - 核心结论、关键数据、专有名词、金句
-- 使用 <strong style="font-weight:700; color:#1F1F1F;">内容</strong>
+- 使用 <strong style="font-weight:700; color:#D94A1E;">内容</strong>
 - 严禁整段加粗、严禁普通叙述加粗
 
 ## 高亮规则
@@ -39,7 +39,7 @@ export const systemPrompt = `# 角色
 ## 表格规则
 当文章中出现 3 条以上同类数据或对比信息时，使用表格呈现：
 <table style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid #E5E6EB; border-radius:4px; overflow:hidden; margin:18px 0; font-size:14px; line-height:1.7;">
-  <thead style="background:#F7F7F7; color:#2D2D2D;">
+  <thead style="background:#D94A1E; color:#FFFFFF;">
     <tr><th style="font-weight:600; padding:10px 14px; text-align:left; border-right:1px solid rgba(255,255,255,0.15);">表头1</th><th style="font-weight:600; padding:10px 14px; text-align:left;">表头2</th></tr>
   </thead>
   <tbody>

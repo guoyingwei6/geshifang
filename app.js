@@ -113,7 +113,7 @@ function exportPDF() {
     img { max-width: 100%; height: auto; display: block; margin: 16px auto; border-radius: 4px; }
     table { border-collapse: collapse; width: 100%; margin: 16px 0; font-size: 13px; border-radius: 6px; overflow: hidden; }
     th, td { border: 1px solid #D0D0D0; padding: 8px 12px; text-align: left; }
-    th { background: #F7F7F7; color: #2D2D2D; font-weight: 600; }
+    th { background: #D94A1E; color: #fff; font-weight: 600; }
     tr:nth-child(even) td { background: #F8F9FA; }
     pre { background: #F5F5F7; border-radius: 6px; padding: 14px 18px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
     code { font-family: 'JetBrains Mono','Consolas',monospace; font-size: 0.9em; }
@@ -299,7 +299,7 @@ async function applyFormat() {
       badge.innerHTML = '&#x1F4E1; 本地'
       badge.style.cssText = 'display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(245,158,11,0.12);color:#B45309;font-weight:500;'
       const { formatLocally } = await import('./utils/localFormatter.js')
-      const headerBg = headerBgPicker.value || '#F7F7F7'
+      const headerBg = headerBgPicker.value || '#D94A1E'
       const h1c = h1Color.value
       const h1s = h1Size.value
       const h2c = h2Color.value

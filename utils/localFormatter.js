@@ -1,6 +1,6 @@
 const CODE_FENCE_RE = /^```(\w*)$/
 const CODE_INDENT_RE = /^(?:\t|    )/
-const IMG_RE = /!\[([^\]]*)\]\(([^)]+)\)/g
+const IMG_RE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g
 const H1_RE = /^(?:[一二三四五六七八九十]+[、.．]|#\s+|##\s+|第[一二三四五六七八九十]+[章节篇部分])\s*(.+)$/
 const H2_RE = /^(?:[（(][一二三四五六七八九十]+[)）]|##\s+|###\s+)\s*(.+)$/
 const H3_RE = /^(?:[【［][^】］]+[】］]|###\s+|####\s+)\s*(.+)$/
@@ -28,7 +28,7 @@ const TD_STYLE = 'padding:10px 14px; border:1px solid #E5E6EB;'
 const CODE_BLOCK_STYLE = 'background:#1E1E2E; color:#CDD6F4; border-radius:6px; padding:14px 16px; margin:16px 0; font-size:13px; line-height:1.7; overflow-x:auto; font-family:"JetBrains Mono","Fira Code","Consolas",monospace;'
 
 function renderBold(text) {
-  return text.replace(BOLD_RE, '<strong style="font-weight:700; color:#1F1F1F;">$1</strong>')
+  return text.replace(BOLD_RE, '<strong style="font-weight:700; color:#D94A1E;">$1</strong>')
 }
 
 function renderHighlight(text) {
@@ -77,7 +77,7 @@ function restoreAll(text, images, codes, links) {
     }
     const alt = escapeHtml(img.alt || '')
     const caption = alt ? `<p data-gs-caption="true" style="${CAPTION_STYLE}">${alt}</p>` : ''
-    return `<img src="${escapeHtml(src)}" alt="${alt}" style="${IMG_STYLE}" />${caption}`
+    return `<img src="${escapeHtml(src)}" alt="${alt}" referrerpolicy="no-referrer" style="${IMG_STYLE}" />${caption}`
   })
 }
 
@@ -173,7 +173,7 @@ function isListType(t) {
   return t === 'ol' || t === 'ul' || t === 'task'
 }
 
-export function formatLocally(rawText, headerBgColor = '#F7F7F7', h1Color = '#D94836', h1Size = '21px', h2Color = '#E25A47', h2Size = '18px', h3Color = '#D94836', h3Size = '16px', h4Color = '#B85A47', h4Size = '15px') {
+export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D94836', h1Size = '21px', h2Color = '#E25A47', h2Size = '18px', h3Color = '#D94836', h3Size = '16px', h4Color = '#B85A47', h4Size = '15px') {
   if (!rawText || typeof rawText !== 'string') return ''
 
   const H1 = `font-size:${h1Size}; font-weight:700; color:${h1Color}; text-align:center; margin:30px 0 18px 0; line-height:1.7;`
