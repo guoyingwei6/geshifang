@@ -341,6 +341,29 @@ function applyIndent() {
   })
 }
 
+function getReadableTextColor(hex) {
+  const normalized = String(hex || '').replace('#', '')
+  if (!/^[0-9a-f]{6}$/i.test(normalized)) return '#FFFFFF'
+  const r = parseInt(normalized.slice(0, 2), 16)
+  const g = parseInt(normalized.slice(2, 4), 16)
+  const b = parseInt(normalized.slice(4, 6), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.72 ? '#2D2D2D' : '#FFFFFF'
+}
+
+function applyTableHeaderColor() {
+  const bg = headerBgPicker.value || '#D94A1E'
+  const fg = getReadableTextColor(bg)
+  preview.querySelectorAll('thead').forEach(thead => {
+    thead.style.setProperty('background', bg, 'important')
+    thead.style.setProperty('color', fg, 'important')
+  })
+  preview.querySelectorAll('th').forEach(th => {
+    th.style.setProperty('background', bg, 'important')
+    th.style.setProperty('color', fg, 'important')
+  })
+}
+
 /* ===== 撤销/重做（预览区） ===== */
 function saveSnapshot() {
   undoStack.push(preview.innerHTML)
@@ -568,7 +591,8 @@ document.addEventListener('DOMContentLoaded', () => {
   $('gs-indent-check').addEventListener('change', applyIndent)
 
   // 表头颜色（通过 formatLocally 传递）
-  // (无需额外事件绑定)
+  headerBgPicker.addEventListener('input', applyTableHeaderColor)
+  headerBgPicker.addEventListener('change', applyTableHeaderColor)
 
   // 全屏
   $('gs-fullscreen-btn').addEventListener('click', () => {

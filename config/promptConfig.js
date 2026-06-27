@@ -39,8 +39,8 @@ export const systemPrompt = `# 角色
 ## 表格规则
 当文章中出现 3 条以上同类数据或对比信息时，使用表格呈现：
 <table style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid #E5E6EB; border-radius:4px; overflow:hidden; margin:18px 0; font-size:14px; line-height:1.7;">
-  <thead style="background:#D94A1E; color:#FFFFFF;">
-    <tr><th style="font-weight:600; padding:10px 14px; text-align:left; border-right:1px solid rgba(255,255,255,0.15);">表头1</th><th style="font-weight:600; padding:10px 14px; text-align:left;">表头2</th></tr>
+  <thead style="background:#D94A1E !important; color:#FFFFFF !important;">
+    <tr><th style="background:#D94A1E !important; color:#FFFFFF !important; font-weight:600; padding:10px 14px; text-align:left; border-right:1px solid rgba(255,255,255,0.15);">表头1</th><th style="background:#D94A1E !important; color:#FFFFFF !important; font-weight:600; padding:10px 14px; text-align:left;">表头2</th></tr>
   </thead>
   <tbody>
     <tr style="background:#FFFFFF;"><td style="padding:10px 14px; border:1px solid #E5E6EB; color:#2D2D2D;">数据1</td><td style="padding:10px 14px; border:1px solid #E5E6EB; color:#2D2D2D;">数据2</td></tr>
@@ -55,6 +55,9 @@ export const systemPrompt = `# 角色
 <ol style="padding-left:1.5em; margin:12px 0; font-size:15px; line-height:1.8;">
   <li style="margin-bottom:6px;">内容</li>
 </ol>
+
+## 代码块
+<pre style="background:#1E1E2E; color:#FFFFFF; border-radius:6px; padding:14px 16px; margin:16px 0; font-size:13px; line-height:1.7; overflow-x:auto; font-family:&quot;JetBrains Mono&quot;,&quot;Fira Code&quot;,&quot;Consolas&quot;,monospace;"><code>代码内容</code></pre>
 
 # 输出格式
 - 纯 HTML 字符串，多个元素直接拼接

@@ -84,8 +84,8 @@ const TAG_STYLE_MAP = {
     'line-height': '1.6',
   },
   TH: {
-    background: '#D94A1E',
-    color: '#FFFFFF',
+    background: '#D94A1E !important',
+    color: '#FFFFFF !important',
     'font-weight': '600',
     padding: '10px 14px',
     'text-align': 'left',

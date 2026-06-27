@@ -25,7 +25,7 @@ const LI_STYLE = 'margin-bottom:6px;'
 const TABLE_STYLE = 'width:100%; border-collapse:separate; border-spacing:0; border:1px solid #E5E6EB; border-radius:4px; overflow:hidden; margin:18px 0; font-size:14px; line-height:1.7;'
 const TH_STYLE = 'font-weight:600; padding:10px 14px; text-align:left; border-right:1px solid rgba(255,255,255,0.15);'
 const TD_STYLE = 'padding:10px 14px; border:1px solid #E5E6EB;'
-const CODE_BLOCK_STYLE = 'background:#1E1E2E; color:#CDD6F4; border-radius:6px; padding:14px 16px; margin:16px 0; font-size:13px; line-height:1.7; overflow-x:auto; font-family:"JetBrains Mono","Fira Code","Consolas",monospace;'
+const CODE_BLOCK_STYLE = "background:#1E1E2E; color:#FFFFFF; border-radius:6px; padding:14px 16px; margin:16px 0; font-size:13px; line-height:1.7; overflow-x:auto; font-family:'JetBrains Mono','Fira Code','Consolas',monospace;"
 
 function renderBold(text) {
   return text.replace(BOLD_RE, '<strong style="font-weight:700; color:#D94A1E;">$1</strong>')
@@ -45,7 +45,7 @@ function escapeHtml(text) {
 }
 
 const IMG_STYLE = 'max-width:100%; height:auto; display:block; margin:18px auto 8px auto; border-radius:4px;'
-const CODE_STYLE = 'background:#F7F0EE; color:#D43D2A; padding:1px 5px; border-radius:3px; font-size:0.9em; font-family:"JetBrains Mono","Fira Code","Consolas",monospace;'
+const CODE_STYLE = "background:#F7F0EE; color:#D43D2A; padding:1px 5px; border-radius:3px; font-size:0.9em; font-family:'JetBrains Mono','Fira Code','Consolas',monospace;"
 const IMG_PH = '\u0000IMG\u0000'
 const CODE_PH = '\u0000COD\u0000'
 const LINK_PH = '\u0000LNK\u0000'
@@ -75,8 +75,9 @@ function restoreAll(text, images, codes, links) {
     if (m && window.pastedImages && window.pastedImages[parseInt(m[1])]) {
       src = window.pastedImages[parseInt(m[1])]
     }
-    const alt = escapeHtml(img.alt || '')
-    const caption = alt ? `<p data-gs-caption="true" style="${CAPTION_STYLE}">${alt}</p>` : ''
+    const rawAlt = (img.alt || '').trim()
+    const alt = escapeHtml(rawAlt)
+    const caption = isCaptionText(rawAlt) ? `<p data-gs-caption="true" style="${CAPTION_STYLE}">${alt}</p>` : ''
     return `<img src="${escapeHtml(src)}" alt="${alt}" referrerpolicy="no-referrer" style="${IMG_STYLE}" />${caption}`
   })
 }
@@ -123,9 +124,10 @@ function renderTable(rows, sepIndex, headerBg) {
   const bodyRows = rows.slice(sepIndex + 1)
 
   const headerText = getReadableTextColor(headerBg)
-  let html = `<div style="overflow-x:auto; -webkit-overflow-scrolling:touch;"><table style="${TABLE_STYLE}"><thead style="background:${headerBg}; color:${headerText};"><tr>`
+  let html = `<div style="overflow-x:auto; -webkit-overflow-scrolling:touch;"><table style="${TABLE_STYLE}"><thead style="background:${headerBg} !important; color:${headerText} !important;"><tr>`
   headerCells.forEach((cell, i) => {
-    const style = i < headerCells.length - 1 ? TH_STYLE : TH_STYLE.replace(' border-right:1px solid rgba(255,255,255,0.15);', '')
+    const thColorStyle = `background:${headerBg} !important; color:${headerText} !important; ${TH_STYLE}`
+    const style = i < headerCells.length - 1 ? thColorStyle : thColorStyle.replace(' border-right:1px solid rgba(255,255,255,0.15);', '')
     html += `<th style="${style}">${renderInline(cell)}</th>`
   })
   html += '</tr></thead><tbody>'
