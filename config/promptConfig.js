@@ -11,27 +11,35 @@ export const systemPrompt = `# 角色
 
 ## 标题层级
 - **一级标题**：文章大章节标题（如一、二、三或 ## 开头）
-  HTML: <h1 style="font-size:22px; font-weight:700; color:#1A3C6D; border-left:4px solid #1A3C6D; padding:4px 0 8px 12px; border-bottom:1px solid #E5E6EB; margin:24px 0 12px 0; line-height:1.6;">内容</h1>
-- **二级标题**：子章节标题（如（一）（二）或 ### 开头）
-  HTML: <h2 style="font-size:18px; font-weight:600; color:#2B6CB0; border-left:3px solid #2B6CB0; padding-left:10px; margin:20px 0 10px 0; line-height:1.6;">内容</h2>
+  HTML: <h1 style="font-size:21px; font-weight:700; color:#D94836; text-align:center; margin:30px 0 18px 0; line-height:1.7;">内容</h1>
+- **二级标题**：子章节标题（如（一）（二）、1.1、1.2 或 ### 开头）
+  HTML: <h2 style="font-size:18px; font-weight:700; color:#E25A47; margin:24px 0 12px 0; line-height:1.7;">内容</h2>
 - **三级标题**：小段落标题
-  HTML: <h3 style="font-size:16px; font-weight:600; color:#1A3C6D; margin:16px 0 8px 0; line-height:1.6;">内容</h3>
+  HTML: <h3 style="font-size:16px; font-weight:700; color:#D94836; margin:20px 0 10px 0; line-height:1.7;">内容</h3>
 
 ## 正文段落
-<p style="font-size:15px; color:#2D2D2D; line-height:1.8; margin:0 0 1em 0;">段落内容</p>
+<p style="font-size:15px; color:#2D2D2D; line-height:1.9; margin:0 0 1em 0;">段落内容</p>
+
+## 图注
+图片下方说明或以“图：”“表：”“Fig.”“Figure”“Table”开头的说明，使用浅灰小字：
+<p style="font-size:13px; color:#B8B8B8; line-height:1.7; margin:6px 0 1.4em 0; text-indent:0;">图：说明文字</p>
 
 ## 加粗规则（仅对以下内容加粗）
 - 核心结论、关键数据、专有名词、金句
-- 使用 <strong style="font-weight:700; color:#1A3C6D;">内容</strong>
+- 使用 <strong style="font-weight:700; color:#1F1F1F;">内容</strong>
 - 严禁整段加粗、严禁普通叙述加粗
 
+## 高亮规则
+高亮使用红色，不使用黄色荧光笔：
+<mark style="background:#FFF1EE; color:#D43D2A; padding:0 3px; border-radius:2px;">内容</mark>
+
 ## 引用块（名人名言、金句）
-<blockquote style="background:#F7F8FA; border-left:4px solid #2B6CB0; padding:12px 16px; margin:16px 0; border-radius:0 6px 6px 0; color:#666; font-size:15px; line-height:1.8;">内容</blockquote>
+<blockquote style="background:#F5F5F5; border-left:4px solid #D94A1E; padding:16px 18px; margin:18px 0; border-radius:0 6px 6px 0; color:#333333; font-size:15px; line-height:1.9;">内容</blockquote>
 
 ## 表格规则
 当文章中出现 3 条以上同类数据或对比信息时，使用表格呈现：
-<table style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid #E5E6EB; border-radius:6px; overflow:hidden; margin:16px 0; font-size:14px; line-height:1.6;">
-  <thead style="background:#1A3C6D; color:#FFFFFF;">
+<table style="width:100%; border-collapse:separate; border-spacing:0; border:1px solid #E5E6EB; border-radius:4px; overflow:hidden; margin:18px 0; font-size:14px; line-height:1.7;">
+  <thead style="background:#F7F7F7; color:#2D2D2D;">
     <tr><th style="font-weight:600; padding:10px 14px; text-align:left; border-right:1px solid rgba(255,255,255,0.15);">表头1</th><th style="font-weight:600; padding:10px 14px; text-align:left;">表头2</th></tr>
   </thead>
   <tbody>

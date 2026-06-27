@@ -11,22 +11,28 @@ const OL_RE = /^\d+[.．、]\s+(.+)$/
 const UL_RE = /^[-*•●]\s+(.+)$/
 const BQ_RE = /^>\s?(.+)$/
 const BOLD_RE = /\*\*(.+?)\*\*/g
+const HIGHLIGHT_RE = /==(.+?)==/g
 const STRIKE_RE = /~~(.+?)~~/g
 const INLINE_CODE_RE = /`([^`]+)`/g
 const LINK_RE = /\[([^\]]*)\]\(([^)]+)\)/g
 
-const P_STYLE = 'font-size:15px; line-height:1.8; margin:0 0 1em 0;'
-const BQ_STYLE = 'background:#F7F8FA; border-left:4px solid #2B6CB0; padding:12px 16px; margin:16px 0; border-radius:0 6px 6px 0; font-size:15px; line-height:1.8;'
+const P_STYLE = 'font-size:15px; color:#2D2D2D; line-height:1.9; margin:0 0 1em 0;'
+const CAPTION_STYLE = 'font-size:13px; color:#B8B8B8; line-height:1.7; margin:6px 0 1.4em 0; text-indent:0;'
+const BQ_STYLE = 'background:#F5F5F5; border-left:4px solid #D94A1E; padding:16px 18px; margin:18px 0; border-radius:0 6px 6px 0; color:#333333; font-size:15px; line-height:1.9;'
 const UL_STYLE = 'padding-left:1.5em; margin:12px 0; font-size:15px; line-height:1.8;'
 const OL_STYLE = 'padding-left:1.5em; margin:12px 0; font-size:15px; line-height:1.8;'
 const LI_STYLE = 'margin-bottom:6px;'
-const TABLE_STYLE = 'width:100%; border-collapse:separate; border-spacing:0; border:1px solid #E5E6EB; border-radius:6px; overflow:hidden; margin:16px 0; font-size:14px; line-height:1.6;'
+const TABLE_STYLE = 'width:100%; border-collapse:separate; border-spacing:0; border:1px solid #E5E6EB; border-radius:4px; overflow:hidden; margin:18px 0; font-size:14px; line-height:1.7;'
 const TH_STYLE = 'font-weight:600; padding:10px 14px; text-align:left; border-right:1px solid rgba(255,255,255,0.15);'
 const TD_STYLE = 'padding:10px 14px; border:1px solid #E5E6EB;'
 const CODE_BLOCK_STYLE = 'background:#1E1E2E; color:#CDD6F4; border-radius:6px; padding:14px 16px; margin:16px 0; font-size:13px; line-height:1.7; overflow-x:auto; font-family:"JetBrains Mono","Fira Code","Consolas",monospace;'
 
 function renderBold(text) {
-  return text.replace(BOLD_RE, '<strong style="font-weight:700; color:#1A3C6D;">$1</strong>')
+  return text.replace(BOLD_RE, '<strong style="font-weight:700; color:#1F1F1F;">$1</strong>')
+}
+
+function renderHighlight(text) {
+  return text.replace(HIGHLIGHT_RE, '<mark style="background:#FFF1EE; color:#D43D2A; padding:0 3px; border-radius:2px;">$1</mark>')
 }
 
 function renderStrike(text) {
@@ -38,8 +44,8 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m])
 }
 
-const IMG_STYLE = 'max-width:100%; height:auto; display:block; margin:16px auto; border-radius:4px;'
-const CODE_STYLE = 'background:#F0F1F3; color:#E53E3E; padding:1px 5px; border-radius:3px; font-size:0.9em; font-family:"JetBrains Mono","Fira Code","Consolas",monospace;'
+const IMG_STYLE = 'max-width:100%; height:auto; display:block; margin:18px auto 8px auto; border-radius:4px;'
+const CODE_STYLE = 'background:#F7F0EE; color:#D43D2A; padding:1px 5px; border-radius:3px; font-size:0.9em; font-family:"JetBrains Mono","Fira Code","Consolas",monospace;'
 const IMG_PH = '\u0000IMG\u0000'
 const CODE_PH = '\u0000COD\u0000'
 const LINK_PH = '\u0000LNK\u0000'
@@ -59,7 +65,7 @@ function restoreAll(text, images, codes, links) {
   let li = 0, ii = 0, ci = 0
   const withLinks = text.replace(LINK_PH_RE, () => {
     const link = links[li++]
-    return `<a href="${escapeHtml(link.href)}" style="color:#2B6CB0;text-decoration:underline;">${renderBold(escapeHtml(link.text))}</a>`
+    return `<a href="${escapeHtml(link.href)}" style="color:#D94A1E;text-decoration:underline;">${renderBold(escapeHtml(link.text))}</a>`
   })
   const withCode = withLinks.replace(CODE_PH_RE, () => `<code style="${CODE_STYLE}">${escapeHtml(codes[ci++])}</code>`)
   return withCode.replace(IMG_PH_RE, () => {
@@ -69,16 +75,33 @@ function restoreAll(text, images, codes, links) {
     if (m && window.pastedImages && window.pastedImages[parseInt(m[1])]) {
       src = window.pastedImages[parseInt(m[1])]
     }
-    return `<img src="${escapeHtml(src)}" alt="${escapeHtml(img.alt)}" style="${IMG_STYLE}" />`
+    const alt = escapeHtml(img.alt || '')
+    const caption = alt ? `<p data-gs-caption="true" style="${CAPTION_STYLE}">${alt}</p>` : ''
+    return `<img src="${escapeHtml(src)}" alt="${alt}" style="${IMG_STYLE}" />${caption}`
   })
 }
 
 function renderInline(text) {
   const { text: extracted, images, codes, links } = extractAll(text)
   const escaped = escapeHtml(extracted)
-  const bolded = renderBold(escaped)
+  const highlighted = renderHighlight(escaped)
+  const bolded = renderBold(highlighted)
   const striked = renderStrike(bolded)
   return restoreAll(striked, images, codes, links)
+}
+
+function isCaptionText(text) {
+  return /^(图|表|Figure|Fig\.?|Table)\s*[:：.]/i.test(text.trim())
+}
+
+function getReadableTextColor(hex) {
+  const normalized = String(hex || '').replace('#', '')
+  if (!/^[0-9a-f]{6}$/i.test(normalized)) return '#FFFFFF'
+  const r = parseInt(normalized.slice(0, 2), 16)
+  const g = parseInt(normalized.slice(2, 4), 16)
+  const b = parseInt(normalized.slice(4, 6), 16)
+  const luminance = (0.299 * r + 0.587 * g + 0.114 * b) / 255
+  return luminance > 0.72 ? '#2D2D2D' : '#FFFFFF'
 }
 
 function isTableRow(line) {
@@ -99,7 +122,8 @@ function renderTable(rows, sepIndex, headerBg) {
   const headerCells = parseTableRow(rows[0])
   const bodyRows = rows.slice(sepIndex + 1)
 
-  let html = `<div style="overflow-x:auto; -webkit-overflow-scrolling:touch;"><table style="${TABLE_STYLE}"><thead style="background:${headerBg}; color:#FFFFFF;"><tr>`
+  const headerText = getReadableTextColor(headerBg)
+  let html = `<div style="overflow-x:auto; -webkit-overflow-scrolling:touch;"><table style="${TABLE_STYLE}"><thead style="background:${headerBg}; color:${headerText};"><tr>`
   headerCells.forEach((cell, i) => {
     const style = i < headerCells.length - 1 ? TH_STYLE : TH_STYLE.replace(' border-right:1px solid rgba(255,255,255,0.15);', '')
     html += `<th style="${style}">${renderInline(cell)}</th>`
@@ -132,6 +156,7 @@ function classifyLine(line) {
   let m
   if (HR_RE.test(trimmed)) return { type: 'hr' }
   if (m = trimmed.match(H1_RE)) return { type: 'h1', text: m[1].trim() }
+  if (m = trimmed.match(/^(\d+(?:\.\d+)+\s+.+)$/)) return { type: 'h2', text: m[1].trim() }
   if (m = trimmed.match(H2_RE)) return { type: 'h2', text: m[1].trim() }
   if (m = trimmed.match(H3_RE)) return { type: 'h3', text: m[1].trim() }
   if (m = trimmed.match(H4_RE)) return { type: 'h4', text: m[1].trim() }
@@ -148,13 +173,13 @@ function isListType(t) {
   return t === 'ol' || t === 'ul' || t === 'task'
 }
 
-export function formatLocally(rawText, headerBgColor = '#1A3C6D', h1Color = '#1A3C6D', h1Size = '22px', h2Color = '#2B6CB0', h2Size = '18px', h3Color = '#1A3C6D', h3Size = '16px', h4Color = '#666', h4Size = '15px') {
+export function formatLocally(rawText, headerBgColor = '#F7F7F7', h1Color = '#D94836', h1Size = '21px', h2Color = '#E25A47', h2Size = '18px', h3Color = '#D94836', h3Size = '16px', h4Color = '#B85A47', h4Size = '15px') {
   if (!rawText || typeof rawText !== 'string') return ''
 
-  const H1 = `font-size:${h1Size}; font-weight:700; color:${h1Color}; border-left:4px solid ${h1Color}; padding:4px 0 8px 12px; border-bottom:1px solid #E5E6EB; margin:24px 0 12px 0; line-height:1.6;`
-  const H2 = `font-size:${h2Size}; font-weight:600; color:${h2Color}; border-left:3px solid ${h2Color}; padding-left:10px; margin:20px 0 10px 0; line-height:1.6;`
-  const H3 = `font-size:${h3Size}; font-weight:600; color:${h3Color}; margin:16px 0 8px 0; line-height:1.6;`
-  const H4 = `font-size:${h4Size}; font-weight:600; color:${h4Color}; margin:14px 0 6px 0; line-height:1.6;`
+  const H1 = `font-size:${h1Size}; font-weight:700; color:${h1Color}; text-align:center; margin:30px 0 18px 0; line-height:1.7;`
+  const H2 = `font-size:${h2Size}; font-weight:700; color:${h2Color}; margin:24px 0 12px 0; line-height:1.7;`
+  const H3 = `font-size:${h3Size}; font-weight:700; color:${h3Color}; margin:20px 0 10px 0; line-height:1.7;`
+  const H4 = `font-size:${h4Size}; font-weight:600; color:${h4Color}; margin:16px 0 8px 0; line-height:1.7;`
 
   const lines = rawText.split('\n')
   const parts = []
@@ -364,7 +389,9 @@ export function formatLocally(rawText, headerBgColor = '#1A3C6D', h1Color = '#1A
     } else if (c.type === 'img') {
       parts.push(renderInline(c.text))
     } else if (c.type === 'p') {
-      parts.push(`<p style="${P_STYLE}">${renderInline(c.text)}</p>`)
+      const style = isCaptionText(c.text) ? CAPTION_STYLE : P_STYLE
+      const attr = isCaptionText(c.text) ? ' data-gs-caption="true"' : ''
+      parts.push(`<p${attr} style="${style}">${renderInline(c.text)}</p>`)
     }
   }
 
