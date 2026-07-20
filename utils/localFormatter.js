@@ -1,3 +1,5 @@
+import { getArticleTheme, renderThemeHeading } from './articleThemes.js'
+
 const CODE_FENCE_RE = /^```(\w*)$/
 const CODE_INDENT_RE = /^(?:\t|    )/
 const IMG_RE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g
@@ -16,23 +18,14 @@ const STRIKE_RE = /~~(.+?)~~/g
 const INLINE_CODE_RE = /`([^`]+)`/g
 const LINK_RE = /\[([^\]]*)\]\(([^)]+)\)/g
 
-const P_STYLE = 'font-size:15px; color:#2D2D2D; line-height:1.9; margin:0 0 1em 0;'
-const CAPTION_STYLE = 'font-size:13px; color:#B8B8B8; line-height:1.7; margin:6px 0 1.4em 0; text-indent:0;'
-const BQ_STYLE = 'background:#F5F5F5; border-left:4px solid #D94A1E; padding:16px 18px; margin:18px 0; border-radius:0 6px 6px 0; color:#333333; font-size:15px; line-height:1.9;'
-const UL_STYLE = 'padding-left:1.5em; margin:12px 0; font-size:15px; line-height:1.8;'
-const OL_STYLE = 'padding-left:1.5em; margin:12px 0; font-size:15px; line-height:1.8;'
 const LI_STYLE = 'margin-bottom:6px;'
-const TABLE_STYLE = 'width:100%; border-collapse:separate; border-spacing:0; border:1px solid #E5E6EB; border-radius:4px; overflow:hidden; margin:18px 0; font-size:14px; line-height:1.7;'
-const TH_STYLE = 'font-weight:600; padding:10px 14px; text-align:left; border-right:1px solid rgba(255,255,255,0.15);'
-const TD_STYLE = 'padding:10px 14px; border:1px solid #E5E6EB;'
-const CODE_BLOCK_STYLE = "background:#1E1E2E; color:#FFFFFF; border-radius:6px; padding:14px 16px; margin:16px 0; font-size:13px; line-height:1.7; overflow-x:auto; font-family:'JetBrains Mono','Fira Code','Consolas',monospace;"
 
-function renderBold(text) {
-  return text.replace(BOLD_RE, '<strong style="font-weight:700; color:#D94A1E;">$1</strong>')
+function renderBold(text, theme) {
+  return text.replace(BOLD_RE, `<strong style="${theme.strong}">$1</strong>`)
 }
 
-function renderHighlight(text) {
-  return text.replace(HIGHLIGHT_RE, '<mark style="background:#FFF1EE; color:#D43D2A; padding:0 3px; border-radius:2px;">$1</mark>')
+function renderHighlight(text, theme) {
+  return text.replace(HIGHLIGHT_RE, `<mark style="${theme.highlight}">$1</mark>`)
 }
 
 function renderStrike(text) {
@@ -44,8 +37,6 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m])
 }
 
-const IMG_STYLE = 'max-width:100%; height:auto; display:block; margin:18px auto 8px auto; border-radius:4px;'
-const CODE_STYLE = "background:#F7F0EE; color:#D43D2A; padding:1px 5px; border-radius:3px; font-size:0.9em; font-family:'JetBrains Mono','Fira Code','Consolas',monospace;"
 const IMG_PH = '\u0000IMG\u0000'
 const CODE_PH = '\u0000COD\u0000'
 const LINK_PH = '\u0000LNK\u0000'
@@ -61,13 +52,13 @@ function extractAll(text) {
   return { text: noLinks, images, codes, links }
 }
 
-function restoreAll(text, images, codes, links) {
+function restoreAll(text, images, codes, links, theme) {
   let li = 0, ii = 0, ci = 0
   const withLinks = text.replace(LINK_PH_RE, () => {
     const link = links[li++]
-    return `<a href="${escapeHtml(link.href)}" style="color:#D94A1E;text-decoration:underline;">${renderBold(escapeHtml(link.text))}</a>`
+    return `<a href="${escapeHtml(link.href)}" style="${theme.link}">${renderBold(escapeHtml(link.text), theme)}</a>`
   })
-  const withCode = withLinks.replace(CODE_PH_RE, () => `<code style="${CODE_STYLE}">${escapeHtml(codes[ci++])}</code>`)
+  const withCode = withLinks.replace(CODE_PH_RE, () => `<code style="${theme.inlineCode}">${escapeHtml(codes[ci++])}</code>`)
   return withCode.replace(IMG_PH_RE, () => {
     const img = images[ii++]
     let src = img.src
@@ -77,18 +68,19 @@ function restoreAll(text, images, codes, links) {
     }
     const rawAlt = (img.alt || '').trim()
     const alt = escapeHtml(rawAlt)
-    const caption = isCaptionText(rawAlt) ? `<p data-gs-caption="true" style="${CAPTION_STYLE}">${alt}</p>` : ''
-    return `<img src="${escapeHtml(src)}" alt="${alt}" referrerpolicy="no-referrer" style="${IMG_STYLE}" />${caption}`
+    const caption = isCaptionText(rawAlt) ? `<p data-gs-caption="true" style="${theme.caption}">${alt}</p>` : ''
+    const image = `<img src="${escapeHtml(src)}" alt="${alt}" referrerpolicy="no-referrer" style="${theme.image}" />`
+    return `${theme.imageWrap ? `<section style="${theme.imageWrap}">${image}</section>` : image}${caption}`
   })
 }
 
-function renderInline(text) {
+function renderInline(text, theme) {
   const { text: extracted, images, codes, links } = extractAll(text)
   const escaped = escapeHtml(extracted)
-  const highlighted = renderHighlight(escaped)
-  const bolded = renderBold(highlighted)
+  const highlighted = renderHighlight(escaped, theme)
+  const bolded = renderBold(highlighted, theme)
   const striked = renderStrike(bolded)
-  return restoreAll(striked, images, codes, links)
+  return restoreAll(striked, images, codes, links, theme)
 }
 
 function isCaptionText(text) {
@@ -119,28 +111,28 @@ function parseTableRow(line) {
   return line.trim().split('|').filter(c => c.trim()).map(c => c.trim())
 }
 
-function renderTable(rows, sepIndex, headerBg) {
+function renderTable(rows, sepIndex, headerBg, theme) {
   const headerCells = parseTableRow(rows[0])
   const bodyRows = rows.slice(sepIndex + 1)
 
   const headerText = getReadableTextColor(headerBg)
-  let html = `<div style="overflow-x:auto; -webkit-overflow-scrolling:touch;"><table style="${TABLE_STYLE}"><thead style="background:${headerBg} !important; color:${headerText} !important;"><tr>`
+  let html = `<section style="overflow-x:auto;-webkit-overflow-scrolling:touch;"><table style="${theme.table}"><thead style="background:${headerBg} !important;color:${headerText} !important;"><tr>`
   headerCells.forEach((cell, i) => {
-    const thColorStyle = `background:${headerBg} !important; color:${headerText} !important; ${TH_STYLE}`
+    const thColorStyle = `background:${headerBg} !important;color:${headerText} !important;${theme.th}`
     const style = i < headerCells.length - 1 ? thColorStyle : thColorStyle.replace(' border-right:1px solid rgba(255,255,255,0.15);', '')
-    html += `<th style="${style}">${renderInline(cell)}</th>`
+    html += `<th style="${style}">${renderInline(cell, theme)}</th>`
   })
   html += '</tr></thead><tbody>'
   bodyRows.forEach((row, ri) => {
     const cells = parseTableRow(row)
-    const bg = ri % 2 === 0 ? '#FFFFFF' : '#F7F8FA'
+    const bg = ri % 2 === 0 ? theme.rowEven : theme.rowOdd
     html += `<tr style="background:${bg};">`
     cells.forEach(cell => {
-      html += `<td style="${TD_STYLE}">${renderInline(cell)}</td>`
+      html += `<td style="${theme.td}">${renderInline(cell, theme)}</td>`
     })
     html += '</tr>'
   })
-  html += '</tbody></table></div>'
+  html += '</tbody></table></section>'
   return html
 }
 
@@ -175,13 +167,10 @@ function isListType(t) {
   return t === 'ol' || t === 'ul' || t === 'task'
 }
 
-export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D94836', h1Size = '21px', h2Color = '#E25A47', h2Size = '18px', h3Color = '#D94836', h3Size = '16px', h4Color = '#B85A47', h4Size = '15px') {
+export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D94836', h1Size = '21px', h2Color = '#E25A47', h2Size = '18px', h3Color = '#D94836', h3Size = '16px', h4Color = '#B85A47', h4Size = '15px', themeId = 'classic') {
   if (!rawText || typeof rawText !== 'string') return ''
-
-  const H1 = `font-size:${h1Size}; font-weight:700; color:${h1Color}; text-align:center; margin:30px 0 18px 0; line-height:1.7;`
-  const H2 = `font-size:${h2Size}; font-weight:700; color:${h2Color}; margin:24px 0 12px 0; line-height:1.7;`
-  const H3 = `font-size:${h3Size}; font-weight:700; color:${h3Color}; margin:20px 0 10px 0; line-height:1.7;`
-  const H4 = `font-size:${h4Size}; font-weight:600; color:${h4Color}; margin:16px 0 8px 0; line-height:1.7;`
+  const theme = getArticleTheme(themeId)
+  const headingOverrides = { h1Color, h1Size, h2Color, h2Size, h3Color, h3Size, h4Color, h4Size }
 
   const lines = rawText.split('\n')
   const parts = []
@@ -195,10 +184,11 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
   let indentCodeBuffer = []
   let listStack = []
   let listIndentBase = -1
+  const headingCounts = { 1: 0, 2: 0, 3: 0, 4: 0 }
 
   function renderListItem(text, type, checked) {
     if (type === 'raw') return text
-    const inner = renderInline(text)
+    const inner = renderInline(text, theme)
     if (type === 'task') {
       const chk = checked ? 'checked' : ''
       return `<li style="${LI_STYLE}display:flex;align-items:flex-start;gap:6px;"><input type="checkbox" ${chk} disabled style="margin-top:0.35em;flex-shrink:0;" /> <span>${inner}</span></li>`
@@ -212,7 +202,7 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
       if (level >= listStack.length) return ''
       const l = listStack[level]
       const tag = l.tag
-      const style = tag === 'ol' ? OL_STYLE : UL_STYLE
+      const style = theme.list
       const margin = level === 0 ? 'margin:12px 0;' : 'margin:0;'
       let html = `<${tag} style="${style}${margin}">`
       for (const item of l.items) {
@@ -230,7 +220,7 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
   function flushCodeBlock() {
     if (!codeBuffer.length) return
     const code = codeBuffer.join('\n')
-    parts.push(`<pre style="${CODE_BLOCK_STYLE}"><code>${escapeHtml(code)}</code></pre>`)
+    parts.push(`<pre style="${theme.codeBlock}"><code style="background:transparent;color:inherit;">${escapeHtml(code)}</code></pre>`)
     codeBuffer = []
     codeLang = ''
   }
@@ -238,7 +228,7 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
   function flushTable() {
     if (!tableRows.length) return
     if (tableSepIndex >= 0) {
-      parts.push(renderTable(tableRows, tableSepIndex, headerBgColor))
+      parts.push(renderTable(tableRows, tableSepIndex, headerBgColor, theme))
     }
     tableRows = []
     tableSepIndex = -1
@@ -247,7 +237,7 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
   function flushIndentCode() {
     if (!indentCodeBuffer.length) return
     const code = indentCodeBuffer.map(l => l.replace(/^(?:\t|    )/, '')).join('\n')
-    parts.push(`<pre style="${CODE_BLOCK_STYLE}"><code>${escapeHtml(code)}</code></pre>`)
+    parts.push(`<pre style="${theme.codeBlock}"><code style="background:transparent;color:inherit;">${escapeHtml(code)}</code></pre>`)
     indentCodeBuffer = []
   }
 
@@ -333,7 +323,7 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
 
     if (c.type === 'hr') {
       flushListStack()
-      parts.push('<hr style="border:none;border-top:1px solid #E5E6EB;margin:20px 0;" />')
+      parts.push(`<hr style="${theme.hr}" />`)
       continue
     }
 
@@ -379,21 +369,21 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
     flushListStack()
 
     if (c.type === 'h1') {
-      parts.push(`<h1 style="${H1}">${renderInline(c.text)}</h1>`)
+      parts.push(renderThemeHeading(themeId, 1, renderInline(c.text, theme), ++headingCounts[1], headingOverrides))
     } else if (c.type === 'h2') {
-      parts.push(`<h2 style="${H2}">${renderInline(c.text)}</h2>`)
+      parts.push(renderThemeHeading(themeId, 2, renderInline(c.text, theme), ++headingCounts[2], headingOverrides))
     } else if (c.type === 'h3') {
-      parts.push(`<h3 style="${H3}">${renderInline(c.text)}</h3>`)
+      parts.push(renderThemeHeading(themeId, 3, renderInline(c.text, theme), ++headingCounts[3], headingOverrides))
     } else if (c.type === 'h4') {
-      parts.push(`<h4 style="${H4}">${renderInline(c.text)}</h4>`)
+      parts.push(renderThemeHeading(themeId, 4, renderInline(c.text, theme), ++headingCounts[4], headingOverrides))
     } else if (c.type === 'bq') {
-      parts.push(`<blockquote style="${BQ_STYLE}">${renderInline(c.text)}</blockquote>`)
+      parts.push(`<blockquote style="${theme.blockquote}">${renderInline(c.text, theme)}</blockquote>`)
     } else if (c.type === 'img') {
-      parts.push(renderInline(c.text))
+      parts.push(renderInline(c.text, theme))
     } else if (c.type === 'p') {
-      const style = isCaptionText(c.text) ? CAPTION_STYLE : P_STYLE
+      const style = isCaptionText(c.text) ? theme.caption : theme.paragraph
       const attr = isCaptionText(c.text) ? ' data-gs-caption="true"' : ''
-      parts.push(`<p${attr} style="${style}">${renderInline(c.text)}</p>`)
+      parts.push(`<p${attr} style="${style}">${renderInline(c.text, theme)}</p>`)
     }
   }
 
@@ -401,5 +391,5 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
   flushCodeBlock()
   flushTable()
   flushIndentCode()
-  return parts.join('\n')
+  return `<section data-gs-article-theme="${themeId}" style="${theme.container}">${parts.join('\n')}</section>`
 }

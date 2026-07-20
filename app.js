@@ -1,3 +1,5 @@
+import { BUILT_IN_THEMES } from './utils/articleThemes.js'
+
 /* ===== 全局状态 ===== */
 let currentTabIndex = 0
 let undoStack = []
@@ -36,7 +38,7 @@ function injectStatsAfterTitle(html) {
   const charCount = input.value.replace(/\s/g, '').length
   const paraCount = input.value.split('\n').filter(l => l.trim()).length || 0
   const minutes = Math.max(1, Math.round(charCount / 300))
-  const statsHtml = `<p style="font-size:13px; color:#999; line-height:1.6; margin:0 0 1em 0;">字数：${charCount}  ·  段落：${paraCount}  ·  预计阅读约 ${minutes} 分钟</p>`
+  const statsHtml = `<p data-gs-meta="true" style="font-size:12px;color:#999;line-height:1.6;margin:0 0 1.4em 0;text-indent:0;">字数：${charCount}  ·  段落：${paraCount}  ·  预计阅读约 ${minutes} 分钟</p>`
   return html.replace('</h1>', '</h1>' + statsHtml)
 }
 
@@ -205,18 +207,42 @@ async function aiRewrite(text, action) {
 
 /* ===== 样式模板 ===== */
 const TEMPLATES_KEY = 'gs_templates'
+const ACTIVE_THEME_KEY = 'gs_article_theme'
+
+function getActiveThemeId() {
+  return localStorage.getItem(ACTIVE_THEME_KEY) || 'classic'
+}
+
 function loadTemplates() {
   try {
     const data = JSON.parse(localStorage.getItem(TEMPLATES_KEY) || '{}')
     const sel = $('gs-template')
     if (!sel) return
-    sel.innerHTML = '<option value="">样式模板...</option>'
-    Object.entries(data).forEach(([name, config]) => {
+    sel.innerHTML = '<option value="">选择文章模板...</option>'
+    const builtInGroup = document.createElement('optgroup')
+    builtInGroup.label = '内置文章模板'
+    Object.entries(BUILT_IN_THEMES).forEach(([id, theme]) => {
       const opt = document.createElement('option')
-      opt.value = name
-      opt.textContent = name
-      sel.appendChild(opt)
+      opt.value = `builtin:${id}`
+      opt.textContent = theme.label
+      opt.title = theme.description
+      builtInGroup.appendChild(opt)
     })
+    sel.appendChild(builtInGroup)
+    const customEntries = Object.entries(data)
+    if (customEntries.length) {
+      const customGroup = document.createElement('optgroup')
+      customGroup.label = '我的模板'
+      customEntries.forEach(([name]) => {
+        const opt = document.createElement('option')
+        opt.value = `custom:${name}`
+        opt.textContent = name
+        customGroup.appendChild(opt)
+      })
+      sel.appendChild(customGroup)
+    }
+    const activeId = getActiveThemeId()
+    if (BUILT_IN_THEMES[activeId]) sel.value = `builtin:${activeId}`
   } catch (e) { /* ignore */ }
 }
 
@@ -234,6 +260,7 @@ function applyTemplate(name) {
     const data = JSON.parse(localStorage.getItem(TEMPLATES_KEY) || '{}')
     const tpl = data[name]
     if (!tpl) return
+    localStorage.setItem(ACTIVE_THEME_KEY, tpl.themeId && BUILT_IN_THEMES[tpl.themeId] ? tpl.themeId : 'classic')
     if (tpl.indent !== undefined) indentCheckbox.checked = tpl.indent
     if (tpl.headerBg) headerBgPicker.value = tpl.headerBg
     if (tpl.h1Color) h1Color.value = tpl.h1Color
@@ -244,8 +271,27 @@ function applyTemplate(name) {
     if (tpl.h3Size) h3Size.value = tpl.h3Size
     if (tpl.h4Color) h4Color.value = tpl.h4Color
     if (tpl.h4Size) h4Size.value = tpl.h4Size
+    if (tpl.font && $('gs-font-select')) $('gs-font-select').value = tpl.font
+    if (tpl.spacing && $('gs-p-spacing')) $('gs-p-spacing').value = tpl.spacing
     headerBgPicker.dispatchEvent(new Event('input'))
   } catch (e) { /* ignore */ }
+}
+
+function applyBuiltInTheme(id) {
+  const theme = BUILT_IN_THEMES[id]
+  if (!theme) return
+  const d = theme.defaults
+  localStorage.setItem(ACTIVE_THEME_KEY, id)
+  indentCheckbox.checked = d.indent
+  headerBgPicker.value = d.headerBg
+  h1Color.value = d.h1Color; h1Size.value = d.h1Size
+  h2Color.value = d.h2Color; h2Size.value = d.h2Size
+  h3Color.value = d.h3Color; h3Size.value = d.h3Size
+  h4Color.value = d.h4Color; h4Size.value = d.h4Size
+  if ($('gs-font-select')) $('gs-font-select').value = d.font
+  if ($('gs-p-spacing') && d.spacing) $('gs-p-spacing').value = d.spacing
+  if ($('gs-template-description')) $('gs-template-description').textContent = theme.description
+  headerBgPicker.dispatchEvent(new Event('input'))
 }
 
 function deleteTemplate(name) {
@@ -288,7 +334,8 @@ async function applyFormat() {
     const { hasApiKey } = await import('./utils/deepseekClient.js')
     const badge = $('gs-mode-badge')
 
-    if (hasApiKey()) {
+    const themeId = getActiveThemeId()
+    if (hasApiKey() && themeId === 'classic') {
       badge.textContent = 'AI'
       badge.className = 'gs-tb-btn text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium'
       const { formatWithAI } = await import('./utils/deepseekClient.js')
@@ -308,7 +355,7 @@ async function applyFormat() {
       const h3s = h3Size.value
       const h4c = h4Color.value
       const h4s = h4Size.value
-      let result = formatLocally(text, headerBg, h1c, h1s, h2c, h2s, h3c, h3s, h4c, h4s)
+      let result = formatLocally(text, headerBg, h1c, h1s, h2c, h2s, h3c, h3s, h4c, h4s, themeId)
       if (!result || !result.trim()) result = '<p>排版结果为空</p>'
       preview.innerHTML = injectStatsAfterTitle(result)
     }
@@ -317,11 +364,6 @@ async function applyFormat() {
     // 应用字体
     const fontSel = $('gs-font-select')
     if (fontSel && fontSel.value) preview.style.fontFamily = fontSel.value
-    // 应用段间距
-    const spacingSel = $('gs-p-spacing')
-    if (spacingSel && spacingSel.value) {
-      preview.querySelectorAll('p').forEach(p => p.style.marginBottom = spacingSel.value)
-    }
     updateStats()
     saveDraft()
   } catch (e) {
@@ -333,7 +375,7 @@ async function applyFormat() {
 function applyIndent() {
   const enable = indentCheckbox.checked
   preview.querySelectorAll('p').forEach(p => {
-    if (p.dataset.gsCaption === 'true') {
+    if (p.dataset.gsCaption === 'true' || p.dataset.gsMeta === 'true') {
       p.style.textIndent = '0'
       return
     }
@@ -362,6 +404,16 @@ function applyTableHeaderColor() {
     th.style.setProperty('background', bg, 'important')
     th.style.setProperty('color', fg, 'important')
   })
+}
+
+function getCopyReadyHtml() {
+  const clone = preview.cloneNode(true)
+  clone.querySelectorAll('[data-gs-article-theme], [data-gs-caption], [data-gs-meta]').forEach(el => {
+    el.removeAttribute('data-gs-article-theme')
+    el.removeAttribute('data-gs-caption')
+    el.removeAttribute('data-gs-meta')
+  })
+  return clone.innerHTML
 }
 
 /* ===== 撤销/重做（预览区） ===== */
@@ -551,6 +603,7 @@ window.addEventListener('beforeunload', saveDraft)
 document.addEventListener('DOMContentLoaded', () => {
   loadDraft()
   loadTemplates()
+  applyBuiltInTheme(getActiveThemeId())
   renderHistoryPanel()
 
   // 页脚
@@ -662,12 +715,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // 模板
   $('gs-template')?.addEventListener('change', function () {
-    if (this.value) applyTemplate(this.value)
+    if (!this.value) return
+    if (this.value.startsWith('builtin:')) {
+      applyBuiltInTheme(this.value.slice('builtin:'.length))
+    } else if (this.value.startsWith('custom:')) {
+      applyTemplate(this.value.slice('custom:'.length))
+      if ($('gs-template-description')) $('gs-template-description').textContent = '我的自定义模板'
+    }
+    if (input.value.trim()) applyFormat()
   })
   $('gs-save-template')?.addEventListener('click', () => {
     const name = prompt('样式模板名称：')
     if (name) {
       saveTemplate(name, {
+        themeId: getActiveThemeId(),
         indent: indentCheckbox.checked,
         headerBg: headerBgPicker.value,
         h1Color: h1Color.value,
@@ -678,22 +739,27 @@ document.addEventListener('DOMContentLoaded', () => {
         h3Size: h3Size.value,
         h4Color: h4Color.value,
         h4Size: h4Size.value,
+        font: $('gs-font-select')?.value,
+        spacing: $('gs-p-spacing')?.value,
       })
     }
   })
   $('gs-template')?.addEventListener('contextmenu', function (e) {
     e.preventDefault()
-    if (this.value) {
-      if (confirm(`删除模板「${this.value}」？`)) {
-        deleteTemplate(this.value)
+    if (this.value.startsWith('custom:')) {
+      const name = this.value.slice('custom:'.length)
+      if (confirm(`删除模板「${name}」？`)) {
+        deleteTemplate(name)
         this.value = ''
       }
+    } else if (this.value.startsWith('builtin:')) {
+      alert('内置文章模板不会被删除；你可以点击 + 保存自己的调整版本。')
     }
   })
 
   // 复制排版结果
   $('gs-copy-btn')?.addEventListener('click', () => {
-    const html = preview.innerHTML
+    const html = getCopyReadyHtml()
     if (!html || !html.trim()) { alert('暂无排版结果可复制'); return }
     const text = preview.textContent
     const htmlBlob = new Blob([html], { type: 'text/html' })

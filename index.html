@@ -12,7 +12,7 @@
       footer: {
         text: '格式坊 · 本地 Markdown 转公众号排版工具',
         creator: { label: '创作者', url: 'https://github.com/moduwusuowei', name: 'Moduwusuowei' },
-        license: { label: '开源', url: 'https://github.com/moduwusuowei', name: 'Moduwusuowei · MIT License' }
+        license: { label: '开源', url: 'https://github.com/guoyingwei6/geshifang/blob/master/LICENSE', name: 'AGPL-3.0-or-later' }
       }
     }
   </script>
@@ -395,6 +395,27 @@
     .scrollbar-thin::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
     /* 代码块内的 code 不应继承内联 code 的背景色 */
     pre code { background: transparent !important; }
+
+    @media (max-width: 760px) {
+      body { overflow: auto; }
+      .gs-app { min-height: 100vh; height: auto; overflow: visible; border-radius: 0; }
+      .gs-header { padding: 0 10px; }
+      .gs-header h1 .gs-sub { display: none; }
+      .gs-header-actions { max-width: 68%; overflow-x: auto; }
+      .gs-toolbar {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding: 6px 8px;
+        -webkit-overflow-scrolling: touch;
+      }
+      #gs-template-description, .gs-tb-sep { display: none; }
+      .gs-main { display: flex; flex-direction: column; min-height: 0; }
+      .gs-panel-left { min-height: 48vh; border-right: 0; border-bottom: 1px solid var(--border); }
+      .gs-preview-box { min-height: 72vh; }
+      .gs-panel-header .text-xs { display: none; }
+      #gs-preview { padding: 18px 12px; }
+      footer { gap: 8px; flex-wrap: wrap; }
+    }
   </style>
 </head>
 <body class="antialiased">
@@ -421,10 +442,11 @@
     <button id="gs-format-btn" class="gs-tb-btn gs-btn-primary">
       &#x1F504; 一键排版
     </button>
-    <select id="gs-template" class="gs-tb-btn" style="max-width:110px;font-size:12px;cursor:pointer;">
-      <option value="">样式模板</option>
+    <select id="gs-template" class="gs-tb-btn" style="max-width:180px;font-size:12px;cursor:pointer;">
+      <option value="">选择文章模板</option>
     </select>
     <button id="gs-save-template" class="gs-tb-btn gs-tb-lg" title="保存模板">+</button>
+    <span id="gs-template-description" style="max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;color:var(--text-muted);" title="当前文章模板说明"></span>
     <span class="gs-tb-sep"></span>
     <button id="gs-undo-btn" class="gs-tb-btn gs-tb-lg" title="撤销（预览区 Ctrl+Z）">&#x21A9;</button>
     <button id="gs-redo-btn" class="gs-tb-btn gs-tb-lg" title="重做（预览区 Ctrl+Y）">&#x21AA;</button>
@@ -444,21 +466,21 @@
       <span style="font-weight:600;">H2</span>
       <input type="color" id="gs-h2-color" value="#E25A47" />
       <select id="gs-h2-size" class="gs-tb-btn" style="width:50px;padding:0 4px;font-size:11px;cursor:pointer;">
-        <option>16px</option><option selected>18px</option><option>20px</option><option>22px</option>
+        <option>16px</option><option>17px</option><option selected>18px</option><option>19px</option><option>20px</option><option>22px</option>
       </select>
     </div>
     <div class="gs-tb-color-wrap">
       <span style="font-weight:600;">H3</span>
       <input type="color" id="gs-h3-color" value="#D94836" />
       <select id="gs-h3-size" class="gs-tb-btn" style="width:46px;padding:0 4px;font-size:11px;cursor:pointer;">
-        <option>14px</option><option selected>16px</option><option>18px</option>
+        <option>14px</option><option>15px</option><option selected>16px</option><option>17px</option><option>18px</option>
       </select>
     </div>
     <div class="gs-tb-color-wrap">
       <span style="font-weight:600;">H4</span>
       <input type="color" id="gs-h4-color" value="#B85A47" />
       <select id="gs-h4-size" class="gs-tb-btn" style="width:46px;padding:0 4px;font-size:11px;cursor:pointer;">
-        <option>13px</option><option selected>15px</option><option>16px</option>
+        <option>13px</option><option>14px</option><option selected>15px</option><option>16px</option>
       </select>
     </div>
     <span class="gs-tb-sep"></span>
