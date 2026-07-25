@@ -83,7 +83,7 @@ export function renderThemeHeading(themeId, level, content, index, overrides = {
   if (themeId === 'red-white') {
     if (level === 1 && index === 1) return `<h1 style="font-size:${size};font-weight:800;color:#FFFFFF;background:#DC2626;border-radius:10px;padding:22px 24px;margin:8px 0 26px;line-height:1.45;box-shadow:0 6px 0 #FECACA;">${content}</h1>`
     if (level === 1) return `<h1 style="font-size:${size};font-weight:800;color:${color};display:flex;align-items:center;gap:12px;border-bottom:3px solid #DC2626;padding:0 0 12px;margin:32px 0 16px;line-height:1.5;"><span style="display:inline-block;background:#DC2626;color:#FFFFFF;border-radius:5px;padding:5px 11px;font-size:14px;letter-spacing:1px;">${String(index - 1).padStart(2, '0')}</span><span>${content}</span></h1>`
-    if (level === 2) return `<h2 style="font-size:${size};font-weight:700;color:${color};border-bottom:1px solid #FECACA;padding:0 0 8px;margin:28px 0 14px;line-height:1.6;">${content}</h2>`
+    if (level === 2) return `<h2 style="font-size:${size};font-weight:800;color:${color};border-bottom:3px solid #DC2626;padding:0 0 12px;margin:30px 0 16px;line-height:1.5;">${content}</h2>`
   }
   if (themeId === 'moyu-ticket') {
     if (level === 1 && index === 1) return `<h1 style="font-size:${size};font-weight:900;color:${color};background:#FFFEF8;border:2px solid #1A1A1A;padding:22px 20px;margin:8px 0 28px;line-height:1.4;letter-spacing:1px;box-shadow:7px 7px 0 #A7F3D0;">${content}</h1>`
