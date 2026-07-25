@@ -3,10 +3,10 @@ import { getArticleTheme, renderThemeHeading } from './articleThemes.js'
 const CODE_FENCE_RE = /^```(\w*)$/
 const CODE_INDENT_RE = /^(?:\t|    )/
 const IMG_RE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g
-const H1_RE = /^(?:[一二三四五六七八九十]+[、.．]|#\s+|##\s+|第[一二三四五六七八九十]+[章节篇部分])\s*(.+)$/
-const H2_RE = /^(?:[（(][一二三四五六七八九十]+[)）]|##\s+|###\s+)\s*(.+)$/
-const H3_RE = /^(?:[【［][^】］]+[】］]|###\s+|####\s+)\s*(.+)$/
-const H4_RE = /^(?:####\s+|#####\s+)(.+)$/
+const HASH_HEADING_RE = /^(#{1,5})\s+(.+)$/
+const H1_RE = /^(?:[一二三四五六七八九十]+[、.．]|第[一二三四五六七八九十]+[章节篇部分])\s*(.+)$/
+const H2_RE = /^(?:[（(][一二三四五六七八九十]+[)）])\s*(.+)$/
+const H3_RE = /^(?:[【［][^】］]+[】］])\s*(.+)$/
 const HR_RE = /^-{3,}$/
 const TASK_RE = /^[-*]\s+\[([ x])\]\s+(.+)$/
 const OL_RE = /^\d+[.．、]\s+(.+)$/
@@ -149,11 +149,14 @@ function classifyLine(line) {
 
   let m
   if (HR_RE.test(trimmed)) return { type: 'hr' }
+  if (m = trimmed.match(HASH_HEADING_RE)) {
+    const level = Math.min(m[1].length, 4)
+    return { type: `h${level}`, text: m[2].trim() }
+  }
   if (m = trimmed.match(H1_RE)) return { type: 'h1', text: m[1].trim() }
   if (m = trimmed.match(/^(\d+(?:\.\d+)+\s+.+)$/)) return { type: 'h2', text: m[1].trim() }
   if (m = trimmed.match(H2_RE)) return { type: 'h2', text: m[1].trim() }
   if (m = trimmed.match(H3_RE)) return { type: 'h3', text: m[1].trim() }
-  if (m = trimmed.match(H4_RE)) return { type: 'h4', text: m[1].trim() }
   if (m = trimmed.match(TASK_RE)) return { type: 'task', checked: m[1] === 'x', text: m[2].trim() }
   if (m = trimmed.match(OL_RE)) return { type: 'ol', text: m[1].trim() }
   if (m = trimmed.match(UL_RE)) return { type: 'ul', text: m[1].trim() }

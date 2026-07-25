@@ -22,26 +22,6 @@ const h4Color = $('gs-h4-color')
 const h4Size = $('gs-h4-size')
 const previewBox = preview.closest('.gs-preview-box')
 
-/* ===== 字数/阅读时间更新 ===== */
-function updateStats() {
-  const text = input.value
-  const charCount = text.replace(/\s/g, '').length
-  const paraCount = text.split('\n').filter(l => l.trim()).length || 0
-  const minutes = Math.max(1, Math.round(charCount / 300))
-  const el = id => document.getElementById(id)
-  if (el('gs-char-count')) el('gs-char-count').textContent = charCount
-  if (el('gs-para-count')) el('gs-para-count').textContent = paraCount
-  if (el('gs-read-time')) el('gs-read-time').textContent = minutes
-}
-
-function injectStatsAfterTitle(html) {
-  const charCount = input.value.replace(/\s/g, '').length
-  const paraCount = input.value.split('\n').filter(l => l.trim()).length || 0
-  const minutes = Math.max(1, Math.round(charCount / 300))
-  const statsHtml = `<p data-gs-meta="true" style="font-size:12px;color:#999;line-height:1.6;margin:0 0 1.4em 0;text-indent:0;">字数：${charCount}  ·  段落：${paraCount}  ·  预计阅读约 ${minutes} 分钟</p>`
-  return html.replace('</h1>', '</h1>' + statsHtml)
-}
-
 /* ===== 行号同步 ===== */
 function syncLineNumbers() {
   const nums = $('#gs-line-nums')
@@ -69,7 +49,7 @@ function renderDraftList() {
   if (!entries.length) { list.innerHTML = '<p style="padding:16px;color:var(--text-muted);font-size:13px;text-align:center;">暂无草稿</p>'; return }
   list.innerHTML = entries.map(([name, content]) => `
     <div class="gs-draft-item" style="display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border-bottom:1px solid var(--border);cursor:pointer;">
-      <span style="font-size:13px;" onclick="document.getElementById('gs-input').value = this.parentElement.dataset.content; updateStats(); $('#gs-draft-modal').classList.add('gs-hidden');">${name}</span>
+      <span style="font-size:13px;" onclick="document.getElementById('gs-input').value = this.parentElement.dataset.content; syncLineNumbers(); $('#gs-draft-modal').classList.add('gs-hidden');">${name}</span>
       <button class="gs-draft-delete" data-name="${name}" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:12px;">&#x2716;</button>
     </div>
   `).join('')
@@ -317,7 +297,6 @@ function loadDraft() {
     if (draft && !input.value) {
       input.value = draft
     }
-    updateStats()
     syncLineNumbers()
   } catch (e) { /* ignore */ }
 }
@@ -341,7 +320,7 @@ async function applyFormat() {
       const { formatWithAI } = await import('./utils/deepseekClient.js')
       let result = await formatWithAI(text)
       if (!result || !result.trim()) result = '<p>AI 返回为空，请重试</p>'
-      preview.innerHTML = injectStatsAfterTitle(result)
+      preview.innerHTML = result
     } else {
       badge.innerHTML = '&#x1F4E1; 本地'
       badge.style.cssText = 'display:inline-flex;align-items:center;gap:4px;font-size:11px;padding:2px 8px;border-radius:10px;background:rgba(245,158,11,0.12);color:#B45309;font-weight:500;'
@@ -357,14 +336,13 @@ async function applyFormat() {
       const h4s = h4Size.value
       let result = formatLocally(text, headerBg, h1c, h1s, h2c, h2s, h3c, h3s, h4c, h4s, themeId)
       if (!result || !result.trim()) result = '<p>排版结果为空</p>'
-      preview.innerHTML = injectStatsAfterTitle(result)
+      preview.innerHTML = result
     }
 
     applyIndent()
     // 应用字体
     const fontSel = $('gs-font-select')
     if (fontSel && fontSel.value) preview.style.fontFamily = fontSel.value
-    updateStats()
     saveDraft()
   } catch (e) {
     preview.innerHTML = `<p style="color:red;padding:12px;background:#FEE2E2;border-radius:6px;">排版出错：${e.message || e}</p>`
@@ -622,9 +600,6 @@ document.addEventListener('DOMContentLoaded', () => {
     footer.style.display = 'none'
   }
 
-  // 字数目标
-  if ($('gs-target-input')) $('gs-target-input').addEventListener('input', updateStats)
-
   // 一键排版
   $('gs-format-btn').addEventListener('click', async () => {
     saveSnapshot()
@@ -801,7 +776,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const file = e.dataTransfer.files[0]
     if (!file || !file.name.endsWith('.md')) { alert('请拖入 .md 文件'); return }
     const reader = new FileReader()
-    reader.onload = () => { input.value = reader.result; updateStats() }
+    reader.onload = () => { input.value = reader.result; syncLineNumbers() }
     reader.readAsText(file, 'utf-8')
   })
 
@@ -1104,7 +1079,7 @@ a { color: #5A6AAA !important; }`
     const file = e.target.files[0]
     if (!file) return
     const reader = new FileReader()
-    reader.onload = () => { input.value = reader.result; updateStats(); syncLineNumbers() }
+    reader.onload = () => { input.value = reader.result; syncLineNumbers() }
     reader.readAsText(file, 'utf-8')
     e.target.value = ''
   })
@@ -1155,7 +1130,7 @@ a { color: #5A6AAA !important; }`
   })
   $('gs-ai-apply')?.addEventListener('click', () => {
     const result = $('#gs-ai-result')?.value
-    if (result) { input.value = input.value + '\n\n' + result; updateStats(); saveDraft(); $('#gs-ai-modal')?.classList.add('gs-hidden') }
+    if (result) { input.value = input.value + '\n\n' + result; syncLineNumbers(); saveDraft(); $('#gs-ai-modal')?.classList.add('gs-hidden') }
   })
   $('gs-ai-close')?.addEventListener('click', () => $('#gs-ai-modal')?.classList.add('gs-hidden'))
 
@@ -1227,7 +1202,6 @@ a { color: #5A6AAA !important; }`
 
   // 输入监听
   input.addEventListener('input', () => {
-    updateStats()
     syncLineNumbers()
     clearTimeout(saveDraftTimer)
     saveDraftTimer = setTimeout(saveDraft, 500)
