@@ -4,7 +4,9 @@ const CODE_FENCE_RE = /^```(\w*)$/
 const CODE_INDENT_RE = /^(?:\t|    )/
 const IMG_RE = /!\[([^\]]*)\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/g
 const HASH_HEADING_RE = /^(#{1,5})\s+(.+)$/
-const H1_RE = /^(?:[一二三四五六七八九十]+[、.．]|第[一二三四五六七八九十]+[章节篇部分])\s*(.+)$/
+// “第二部分就是……”是正文，不应因为以“第二部分”开头而被识别成标题。
+// 对“第 X 章/部分”形式要求后面有空格或冒号，避免吞掉正文；中文数字序号仍可不加空格。
+const H1_RE = /^(?:[一二三四五六七八九十]+[、.．]\s*|第[一二三四五六七八九十]+[章节篇部分](?:\s+|[：:]\s*))(.+)$/
 const H2_RE = /^(?:[（(][一二三四五六七八九十]+[)）])\s*(.+)$/
 const H3_RE = /^(?:[【［][^】］]+[】］])\s*(.+)$/
 const HR_RE = /^-{3,}$/
@@ -194,7 +196,7 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
     const inner = renderInline(text, theme)
     if (type === 'task') {
       const chk = checked ? 'checked' : ''
-      return `<li style="${LI_STYLE}display:flex;align-items:flex-start;gap:6px;"><input type="checkbox" ${chk} disabled style="margin-top:0.35em;flex-shrink:0;" /> <span>${inner}</span></li>`
+      return `<li style="${LI_STYLE}list-style:none;display:flex;align-items:flex-start;gap:6px;"><input type="checkbox" ${chk} disabled style="margin-top:0.35em;flex-shrink:0;" /> <span>${inner}</span></li>`
     }
     return `<li style="${LI_STYLE}">${inner}</li>`
   }
@@ -206,8 +208,11 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
       const l = listStack[level]
       const tag = l.tag
       const style = theme.list
+      // Tailwind Preflight resets ul/ol to list-style:none; restore the
+      // semantic markers explicitly so bullets and ordered numbers render.
+      const marker = tag === 'ol' ? 'list-style-type:decimal;list-style-position:outside;' : 'list-style-type:disc;list-style-position:outside;'
       const margin = level === 0 ? 'margin:12px 0;' : 'margin:0;'
-      let html = `<${tag} style="${style}${margin}">`
+      let html = `<${tag} style="${style}${marker}${margin}">`
       for (const item of l.items) {
         html += renderListItem(item.text, item.type, item.checked)
       }
