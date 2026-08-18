@@ -79,7 +79,7 @@ export const BUILT_IN_THEMES = {
     label: '橄榄手记', shortLabel: '橄榄手记', description: '克制的内刊手记感，适合深度评测与复盘',
     defaults: { indent: false, headerBg: '#1E1F23', h1Color: '#23251D', h1Size: '24px', h2Color: '#23251D', h2Size: '18px', h3Color: '#23251D', h3Size: '16px', h4Color: '#65675E', h4Size: '14px', font: "'IBM Plex Sans',-apple-system,system-ui,'PingFang SC','Microsoft YaHei',sans-serif", spacing: '1em' },
     container: 'max-width:677px;margin:0 auto;padding:22px 18px;box-sizing:border-box;background:#FDFDF8;color:#4D4F46;border:1px solid #BFC1B7;border-radius:6px;', paragraph: 'font-size:14px;color:#4D4F46;line-height:1.9;margin:0 0 18px;text-align:justify;', caption: 'font-size:11px;color:#9EA096;line-height:1.7;margin:7px 0 22px;text-align:center;text-indent:0;',
-    blockquote: 'background:#F7F7F3;border:1px solid #D8D9D2;border-left:3px solid #A3A69A;border-radius:4px;padding:14px 17px;margin:22px 0;color:#5B5D55;font-size:14px;line-height:1.85;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:14px;line-height:1.85;color:#4D4F46;',
+    blockquote: 'background:#EEEFE9;border:1px solid #BFC1B7;border-left:4px solid #ED7B2F;border-radius:6px;padding:15px 17px;margin:22px 0;color:#23251D;font-size:14px;line-height:1.85;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:14px;line-height:1.85;color:#4D4F46;',
     callout: {
       container: 'background:#F3F5EF;border:1px solid #BFC1B7;border-left:4px solid #5E7D6A;border-radius:6px;padding:0;margin:22px 0;color:#30352D;font-size:14px;line-height:1.85;overflow:hidden;',
       header: 'display:flex;align-items:center;gap:8px;background:#E7ECE2;color:#4F6B5A;font-weight:700;padding:9px 17px;border-bottom:1px solid #BFC1B7;',
