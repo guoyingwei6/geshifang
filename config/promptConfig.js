@@ -34,7 +34,7 @@ export const systemPrompt = `# 角色
 <mark style="background:#FFF1EE; color:#D43D2A; padding:0 3px; border-radius:2px;">内容</mark>
 
 ## 引用块（名人名言、金句）
-<blockquote style="background:#F5F5F5; border-left:4px solid #D94A1E; padding:16px 18px; margin:18px 0; border-radius:0 6px 6px 0; color:#333333; font-size:15px; line-height:1.9;">内容</blockquote>
+<blockquote style="background:#F8FAFC; border:1px solid #E5E7EB; border-left:3px solid #CBD5E1; padding:14px 18px; margin:18px 0; border-radius:4px; color:#4B5563; font-size:15px; line-height:1.9;">内容</blockquote>
 
 ## 表格规则
 当文章中出现 3 条以上同类数据或对比信息时，使用表格呈现：

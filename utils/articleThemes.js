@@ -12,7 +12,7 @@ export const BUILT_IN_THEMES = {
     container: 'max-width:677px;margin:0 auto;box-sizing:border-box;background:#FFFFFF;color:#2D2D2D;',
     paragraph: 'font-size:15px;color:#2D2D2D;line-height:1.9;margin:0 0 1em 0;',
     caption: 'font-size:13px;color:#B8B8B8;line-height:1.7;margin:6px 0 1.4em 0;text-indent:0;',
-    blockquote: 'background:#F5F5F5;border-left:4px solid #D94A1E;padding:16px 18px;margin:18px 0;border-radius:0 6px 6px 0;color:#333333;font-size:15px;line-height:1.9;',
+    blockquote: 'background:#F8FAFC;border:1px solid #E5E7EB;border-left:3px solid #CBD5E1;padding:14px 18px;margin:18px 0;border-radius:4px;color:#4B5563;font-size:15px;line-height:1.9;',
     callout: {
       container: 'background:#EEF6FF;border:1px solid #C7DFF2;border-left:4px solid #4A90C2;border-radius:6px;padding:0;margin:18px 0;color:#2D3D4C;font-size:15px;line-height:1.9;overflow:hidden;',
       header: 'display:flex;align-items:center;gap:8px;background:#E2F0FB;color:#2F6F9F;font-weight:700;padding:9px 18px;border-bottom:1px solid #C7DFF2;',
@@ -34,7 +34,7 @@ export const BUILT_IN_THEMES = {
     defaults: { indent: false, headerBg: '#059669', h1Color: '#111827', h1Size: '24px', h2Color: '#111827', h2Size: '18px', h3Color: '#111827', h3Size: '16px', h4Color: '#374151', h4Size: '14px', font: "-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif", spacing: '1em' },
     container: 'max-width:677px;margin:0 auto;padding:18px 20px;box-sizing:border-box;background:#FFFFFF;color:#374151;',
     paragraph: 'font-size:14px;color:#374151;line-height:1.9;margin:0 0 16px 0;text-align:justify;', caption: 'font-size:12px;color:#9CA3AF;line-height:1.7;margin:7px 0 20px;text-align:center;text-indent:0;',
-    blockquote: 'background:#F0FDF4;border:1px dashed #6EE7B7;border-left:4px solid #059669;padding:15px 18px;margin:20px 0;color:#1F2937;font-size:14px;line-height:1.85;',
+    blockquote: 'background:#F8FAFC;border:1px solid #E2E8F0;border-left:3px solid #94A3B8;padding:14px 18px;margin:20px 0;color:#4B5563;font-size:14px;line-height:1.85;',
     callout: {
       container: 'background:#EFF6FF;border:1px solid #BFDBFE;border-left:5px solid #2563EB;border-radius:8px;padding:0;margin:20px 0;color:#1F2937;font-size:14px;line-height:1.85;overflow:hidden;',
       header: 'display:flex;align-items:center;gap:8px;background:#DBEAFE;color:#1D4ED8;font-weight:700;padding:9px 18px;border-bottom:1px solid #BFDBFE;',
@@ -51,7 +51,7 @@ export const BUILT_IN_THEMES = {
     label: '红白', shortLabel: '红白', description: '强对比、有力量感，适合观点与深度分析',
     defaults: { indent: false, headerBg: '#DC2626', h1Color: '#1C1917', h1Size: '24px', h2Color: '#1C1917', h2Size: '19px', h3Color: '#991B1B', h3Size: '16px', h4Color: '#57534E', h4Size: '15px', font: "-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif", spacing: '1em' },
     container: 'max-width:677px;margin:0 auto;padding:20px;box-sizing:border-box;background:#FFFFFF;color:#374151;', paragraph: 'font-size:15px;color:#374151;line-height:1.9;margin:0 0 18px;text-align:justify;', caption: 'font-size:12px;color:#9CA3AF;line-height:1.7;margin:8px 0 22px;text-align:center;text-indent:0;',
-    blockquote: 'background:#FEF2F2;border-left:4px solid #DC2626;border-radius:0 10px 10px 0;padding:18px 22px;margin:22px 0;color:#1F2937;font-size:15px;line-height:1.85;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:15px;line-height:1.85;color:#374151;',
+    blockquote: 'background:#FAFAFA;border:1px solid #E5E7EB;border-left:3px solid #CBD5E1;border-radius:4px;padding:14px 18px;margin:20px 0;color:#4B5563;font-size:15px;line-height:1.85;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:15px;line-height:1.85;color:#374151;',
     callout: {
       container: 'background:#FFF7ED;border:1px solid #FED7AA;border-left:5px solid #F97316;border-radius:10px;padding:0;margin:22px 0;color:#431407;font-size:15px;line-height:1.85;overflow:hidden;',
       header: 'display:flex;align-items:center;gap:8px;background:#FFEDD5;color:#C2410C;font-weight:700;padding:10px 22px;border-bottom:1px solid #FED7AA;',
@@ -65,7 +65,7 @@ export const BUILT_IN_THEMES = {
     label: '摸鱼票据', shortLabel: '摸鱼票据', description: '票根与收据视觉，适合工具对比与创意评测',
     defaults: { indent: false, headerBg: '#059669', h1Color: '#1A1A1A', h1Size: '24px', h2Color: '#1A1A1A', h2Size: '18px', h3Color: '#1A1A1A', h3Size: '15px', h4Color: '#555555', h4Size: '14px', font: "-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif", spacing: '1em' },
     container: 'max-width:677px;margin:0 auto;padding:22px 20px;box-sizing:border-box;background:#FFFDF5;color:#555555;border-left:1px dashed #D1D5DB;border-right:1px dashed #D1D5DB;', paragraph: 'font-size:14px;color:#555555;line-height:1.9;margin:0 0 18px;text-align:justify;', caption: 'font-size:11px;color:#999999;letter-spacing:1px;line-height:1.7;margin:7px 0 22px;text-align:center;text-indent:0;',
-    blockquote: 'background:#F0FDF4;border-left:4px solid #059669;padding:14px 16px;margin:22px 0;color:#1A1A1A;font-size:14px;font-weight:600;line-height:1.8;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:14px;line-height:1.85;color:#555555;',
+    blockquote: 'background:#FBFAF4;border:1px solid #E5E7EB;border-left:3px solid #A8A29E;padding:13px 16px;margin:22px 0;color:#57534E;font-size:14px;font-weight:400;line-height:1.8;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:14px;line-height:1.85;color:#555555;',
     callout: {
       container: 'background:#FFFEF8;border:1px dashed #86EFAC;border-left:7px solid #059669;padding:0;margin:22px 0;color:#1A1A1A;font-size:14px;line-height:1.8;box-shadow:5px 5px 0 #D1FAE5;overflow:hidden;',
       header: 'display:flex;align-items:center;gap:8px;background:#F0FDF4;color:#047857;font-weight:800;padding:9px 16px;border-bottom:1px dashed #A7F3D0;letter-spacing:.2px;',
@@ -79,7 +79,7 @@ export const BUILT_IN_THEMES = {
     label: '橄榄手记', shortLabel: '橄榄手记', description: '克制的内刊手记感，适合深度评测与复盘',
     defaults: { indent: false, headerBg: '#1E1F23', h1Color: '#23251D', h1Size: '24px', h2Color: '#23251D', h2Size: '18px', h3Color: '#23251D', h3Size: '16px', h4Color: '#65675E', h4Size: '14px', font: "'IBM Plex Sans',-apple-system,system-ui,'PingFang SC','Microsoft YaHei',sans-serif", spacing: '1em' },
     container: 'max-width:677px;margin:0 auto;padding:22px 18px;box-sizing:border-box;background:#FDFDF8;color:#4D4F46;border:1px solid #BFC1B7;border-radius:6px;', paragraph: 'font-size:14px;color:#4D4F46;line-height:1.9;margin:0 0 18px;text-align:justify;', caption: 'font-size:11px;color:#9EA096;line-height:1.7;margin:7px 0 22px;text-align:center;text-indent:0;',
-    blockquote: 'background:#EEEFE9;border:1px solid #BFC1B7;border-left:4px solid #ED7B2F;border-radius:6px;padding:15px 17px;margin:22px 0;color:#23251D;font-size:14px;line-height:1.85;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:14px;line-height:1.85;color:#4D4F46;',
+    blockquote: 'background:#F7F7F3;border:1px solid #D8D9D2;border-left:3px solid #A3A69A;border-radius:4px;padding:14px 17px;margin:22px 0;color:#5B5D55;font-size:14px;line-height:1.85;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:14px;line-height:1.85;color:#4D4F46;',
     callout: {
       container: 'background:#F3F5EF;border:1px solid #BFC1B7;border-left:4px solid #5E7D6A;border-radius:6px;padding:0;margin:22px 0;color:#30352D;font-size:14px;line-height:1.85;overflow:hidden;',
       header: 'display:flex;align-items:center;gap:8px;background:#E7ECE2;color:#4F6B5A;font-weight:700;padding:9px 17px;border-bottom:1px solid #BFC1B7;',

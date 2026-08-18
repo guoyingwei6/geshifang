@@ -99,7 +99,7 @@ function exportPDF() {
     tr:nth-child(even) td { background: #F8F9FA; }
     pre { background: #F5F5F7; border-radius: 6px; padding: 14px 18px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
     code { font-family: 'JetBrains Mono','Consolas',monospace; font-size: 0.9em; }
-    blockquote { background: #F5F5F5; border-left: 4px solid #D94A1E; margin: 18px 0; padding: 16px 18px; border-radius: 0 6px 6px 0; color: #333; }
+    blockquote { background: #F8FAFC; border: 1px solid #E5E7EB; border-left: 3px solid #CBD5E1; margin: 18px 0; padding: 14px 18px; border-radius: 4px; color: #4B5563; }
     hr { border: none; border-top: 1px solid #E0E0E0; margin: 24px 0; }
     .gs-print-stats { font-size: 13px; color: #999; line-height: 1.6; margin: 0 0 1em 0; }
   </style></head><body>${content}</body></html>`)
