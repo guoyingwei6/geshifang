@@ -13,7 +13,8 @@ const HR_RE = /^-{3,}$/
 const TASK_RE = /^[-*]\s+\[([ x])\]\s+(.+)$/
 const OL_RE = /^\d+[.．、]\s+(.+)$/
 const UL_RE = /^[-*•●]\s+(.+)$/
-const BQ_RE = /^>\s?(.+)$/
+const QUOTE_RE = /^\s*>\s?(.*)$/
+const CALLOUT_RE = /^\[!([A-Za-z][\w-]*)\]([+-])?(?:\s+(.*))?$/
 const BOLD_RE = /\*\*(.+?)\*\*/g
 const HIGHLIGHT_RE = /==(.+?)==/g
 const STRIKE_RE = /~~(.+?)~~/g
@@ -21,6 +22,36 @@ const INLINE_CODE_RE = /`([^`]+)`/g
 const LINK_RE = /\[([^\]]*)\]\(([^)]+)\)/g
 
 const LI_STYLE = 'margin-bottom:6px;'
+
+const CALLOUT_META = {
+  note: { label: 'Note', icon: '✎' },
+  abstract: { label: 'Abstract', icon: '▤' },
+  summary: { label: 'Summary', icon: '▤' },
+  tldr: { label: 'TL;DR', icon: '▤' },
+  info: { label: 'Info', icon: 'ⓘ' },
+  todo: { label: 'Todo', icon: '☑' },
+  tip: { label: 'Tip', icon: '✦' },
+  hint: { label: 'Hint', icon: '✦' },
+  important: { label: 'Important', icon: '★' },
+  success: { label: 'Success', icon: '✓' },
+  check: { label: 'Check', icon: '✓' },
+  done: { label: 'Done', icon: '✓' },
+  question: { label: 'Question', icon: '?' },
+  help: { label: 'Help', icon: '?' },
+  faq: { label: 'FAQ', icon: '?' },
+  warning: { label: 'Warning', icon: '⚠' },
+  caution: { label: 'Caution', icon: '⚠' },
+  attention: { label: 'Attention', icon: '⚠' },
+  failure: { label: 'Failure', icon: '×' },
+  fail: { label: 'Fail', icon: '×' },
+  missing: { label: 'Missing', icon: '×' },
+  danger: { label: 'Danger', icon: '!' },
+  error: { label: 'Error', icon: '!' },
+  bug: { label: 'Bug', icon: '⚙' },
+  example: { label: 'Example', icon: '▣' },
+  quote: { label: 'Quote', icon: '❞' },
+  cite: { label: 'Cite', icon: '❞' },
+}
 
 function renderBold(text, theme) {
   return text.replace(BOLD_RE, `<strong style="${theme.strong}">$1</strong>`)
@@ -83,6 +114,68 @@ function renderInline(text, theme) {
   const bolded = renderBold(highlighted, theme)
   const striked = renderStrike(bolded)
   return restoreAll(striked, images, codes, links, theme)
+}
+
+function getCalloutMeta(type) {
+  const normalized = String(type || '').toLowerCase()
+  return CALLOUT_META[normalized] || {
+    label: normalized ? normalized.charAt(0).toUpperCase() + normalized.slice(1) : 'Callout',
+    icon: '▌',
+  }
+}
+
+function splitQuotedParagraphs(lines) {
+  const paragraphs = []
+  let current = []
+
+  for (const line of lines) {
+    const text = line.trim()
+    if (!text) {
+      if (current.length) {
+        paragraphs.push(current.join(' ').trim())
+        current = []
+      }
+      continue
+    }
+    current.push(text)
+  }
+
+  if (current.length) paragraphs.push(current.join(' ').trim())
+  return paragraphs
+}
+
+function renderQuotedParagraphs(lines, theme, paragraphStyle) {
+  const paragraphs = splitQuotedParagraphs(lines)
+  if (!paragraphs.length) return ''
+
+  return paragraphs.map((text, index) => {
+    const margin = index === paragraphs.length - 1 ? '0' : '0 0 12px'
+    return `<p style="${paragraphStyle || ''}margin:${margin};">${renderInline(text, theme)}</p>`
+  }).join('')
+}
+
+function renderBlockquote(lines, theme) {
+  const content = renderQuotedParagraphs(lines, theme, 'line-height:inherit;')
+  if (!content) return ''
+  return `<blockquote style="${theme.blockquote}">${content}</blockquote>`
+}
+
+function renderCallout(lines, theme) {
+  const match = lines[0].trim().match(CALLOUT_RE)
+  if (!match) return renderBlockquote(lines, theme)
+
+  const type = match[1].toLowerCase()
+  const meta = getCalloutMeta(type)
+  const callout = theme.callout || {
+    container: theme.blockquote,
+    header: 'display:flex;align-items:center;gap:8px;font-weight:700;padding:9px 18px;border-bottom:1px solid #E5E6EB;',
+    body: 'padding:13px 18px 15px;',
+  }
+  const title = (match[3] || meta.label).trim() || meta.label
+  const body = renderQuotedParagraphs(lines.slice(1), theme, 'line-height:inherit;')
+  const bodyHtml = body ? `<div style="${callout.body}">${body}</div>` : ''
+
+  return `<section data-gs-callout="${escapeHtml(type)}" style="${callout.container}"><div style="${callout.header}"><span aria-hidden="true">${escapeHtml(meta.icon)}</span><span>${renderInline(title, theme)}</span></div>${bodyHtml}</section>`
 }
 
 function isCaptionText(text) {
@@ -162,7 +255,6 @@ function classifyLine(line) {
   if (m = trimmed.match(TASK_RE)) return { type: 'task', checked: m[1] === 'x', text: m[2].trim() }
   if (m = trimmed.match(OL_RE)) return { type: 'ol', text: m[1].trim() }
   if (m = trimmed.match(UL_RE)) return { type: 'ul', text: m[1].trim() }
-  if (m = trimmed.match(BQ_RE)) return { type: 'bq', text: m[1].trim() }
   if (/^!\[.*\]\(.+\)$/.test(trimmed)) return { type: 'img', text: trimmed }
 
   return { type: 'p', text: trimmed }
@@ -320,6 +412,26 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
       inIndentCode = false
     }
 
+    const quoteMatch = line.match(QUOTE_RE)
+    if (quoteMatch) {
+      flushListStack()
+      const quotedLines = [quoteMatch[1]]
+      let quoteEnd = i + 1
+      while (quoteEnd < lines.length) {
+        const nextQuote = lines[quoteEnd].match(QUOTE_RE)
+        if (!nextQuote) break
+        quotedLines.push(nextQuote[1])
+        quoteEnd++
+      }
+
+      const rendered = quotedLines[0].trim().match(CALLOUT_RE)
+        ? renderCallout(quotedLines, theme)
+        : renderBlockquote(quotedLines, theme)
+      if (rendered) parts.push(rendered)
+      i = quoteEnd - 1
+      continue
+    }
+
     const c = classifyLine(line)
     const nextLine = i + 1 < lines.length ? lines[i + 1] : ''
     const nextC = classifyLine(nextLine)
@@ -384,8 +496,6 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
       parts.push(renderThemeHeading(themeId, 3, renderInline(c.text, theme), ++headingCounts[3], headingOverrides))
     } else if (c.type === 'h4') {
       parts.push(renderThemeHeading(themeId, 4, renderInline(c.text, theme), ++headingCounts[4], headingOverrides))
-    } else if (c.type === 'bq') {
-      parts.push(`<blockquote style="${theme.blockquote}">${renderInline(c.text, theme)}</blockquote>`)
     } else if (c.type === 'img') {
       parts.push(renderInline(c.text, theme))
     } else if (c.type === 'p') {

@@ -302,6 +302,8 @@ function loadDraft() {
 }
 
 /* ===== 核心排版 ===== */
+const MARKDOWN_CALLOUT_RE = /^\s*>\s*\[![A-Za-z][\w-]*\]/m
+
 async function applyFormat() {
   try {
     let text = input.value
@@ -314,7 +316,10 @@ async function applyFormat() {
     const badge = $('gs-mode-badge')
 
     const themeId = getActiveThemeId()
-    if (hasApiKey() && themeId === 'classic') {
+    // Obsidian callouts are structural Markdown. Keep them on the local
+    // parser path so the callout header/body cannot be flattened by AI into
+    // separate ordinary blockquotes or literal `>` paragraphs.
+    if (hasApiKey() && themeId === 'classic' && !MARKDOWN_CALLOUT_RE.test(text)) {
       badge.textContent = 'AI'
       badge.className = 'gs-tb-btn text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium'
       const { formatWithAI } = await import('./utils/deepseekClient.js')
@@ -353,7 +358,7 @@ async function applyFormat() {
 function applyIndent() {
   const enable = indentCheckbox.checked
   preview.querySelectorAll('p').forEach(p => {
-    if (p.dataset.gsCaption === 'true' || p.dataset.gsMeta === 'true') {
+    if (p.dataset.gsCaption === 'true' || p.dataset.gsMeta === 'true' || p.closest('[data-gs-callout], blockquote')) {
       p.style.textIndent = '0'
       return
     }

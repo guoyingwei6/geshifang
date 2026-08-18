@@ -13,6 +13,11 @@ export const BUILT_IN_THEMES = {
     paragraph: 'font-size:15px;color:#2D2D2D;line-height:1.9;margin:0 0 1em 0;',
     caption: 'font-size:13px;color:#B8B8B8;line-height:1.7;margin:6px 0 1.4em 0;text-indent:0;',
     blockquote: 'background:#F5F5F5;border-left:4px solid #D94A1E;padding:16px 18px;margin:18px 0;border-radius:0 6px 6px 0;color:#333333;font-size:15px;line-height:1.9;',
+    callout: {
+      container: 'background:#EEF6FF;border:1px solid #C7DFF2;border-left:4px solid #4A90C2;border-radius:6px;padding:0;margin:18px 0;color:#2D3D4C;font-size:15px;line-height:1.9;overflow:hidden;',
+      header: 'display:flex;align-items:center;gap:8px;background:#E2F0FB;color:#2F6F9F;font-weight:700;padding:9px 18px;border-bottom:1px solid #C7DFF2;',
+      body: 'padding:13px 18px 15px;'
+    },
     list: 'padding-left:1.5em;margin:12px 0;font-size:15px;line-height:1.8;color:#2D2D2D;',
     table: 'width:100%;border-collapse:separate;border-spacing:0;border:1px solid #E5E6EB;border-radius:4px;overflow:hidden;margin:18px 0;font-size:14px;line-height:1.7;',
     th: 'font-weight:600;padding:10px 14px;text-align:left;border-right:1px solid rgba(255,255,255,0.15);',
@@ -30,6 +35,11 @@ export const BUILT_IN_THEMES = {
     container: 'max-width:677px;margin:0 auto;padding:18px 20px;box-sizing:border-box;background:#FFFFFF;color:#374151;',
     paragraph: 'font-size:14px;color:#374151;line-height:1.9;margin:0 0 16px 0;text-align:justify;', caption: 'font-size:12px;color:#9CA3AF;line-height:1.7;margin:7px 0 20px;text-align:center;text-indent:0;',
     blockquote: 'background:#F0FDF4;border:1px dashed #6EE7B7;border-left:4px solid #059669;padding:15px 18px;margin:20px 0;color:#1F2937;font-size:14px;line-height:1.85;',
+    callout: {
+      container: 'background:#EFF6FF;border:1px solid #BFDBFE;border-left:5px solid #2563EB;border-radius:8px;padding:0;margin:20px 0;color:#1F2937;font-size:14px;line-height:1.85;overflow:hidden;',
+      header: 'display:flex;align-items:center;gap:8px;background:#DBEAFE;color:#1D4ED8;font-weight:700;padding:9px 18px;border-bottom:1px solid #BFDBFE;',
+      body: 'padding:13px 18px 15px;'
+    },
     list: 'padding-left:1.45em;margin:14px 0 20px;font-size:14px;line-height:1.85;color:#374151;', table: 'width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;line-height:1.7;border:1px solid #D1FAE5;',
     th: 'font-weight:700;padding:10px 12px;text-align:left;border:1px solid #A7F3D0;', td: 'padding:10px 12px;border:1px solid #D1FAE5;', rowEven: '#FFFFFF', rowOdd: '#F0FDF4',
     codeBlock: "background:#111827;color:#E5E7EB;border-left:4px solid #10B981;padding:15px 17px;margin:18px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'JetBrains Mono','Consolas',monospace;",
@@ -42,6 +52,11 @@ export const BUILT_IN_THEMES = {
     defaults: { indent: false, headerBg: '#DC2626', h1Color: '#1C1917', h1Size: '24px', h2Color: '#1C1917', h2Size: '19px', h3Color: '#991B1B', h3Size: '16px', h4Color: '#57534E', h4Size: '15px', font: "-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif", spacing: '1em' },
     container: 'max-width:677px;margin:0 auto;padding:20px;box-sizing:border-box;background:#FFFFFF;color:#374151;', paragraph: 'font-size:15px;color:#374151;line-height:1.9;margin:0 0 18px;text-align:justify;', caption: 'font-size:12px;color:#9CA3AF;line-height:1.7;margin:8px 0 22px;text-align:center;text-indent:0;',
     blockquote: 'background:#FEF2F2;border-left:4px solid #DC2626;border-radius:0 10px 10px 0;padding:18px 22px;margin:22px 0;color:#1F2937;font-size:15px;line-height:1.85;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:15px;line-height:1.85;color:#374151;',
+    callout: {
+      container: 'background:#FFF7ED;border:1px solid #FED7AA;border-left:5px solid #F97316;border-radius:10px;padding:0;margin:22px 0;color:#431407;font-size:15px;line-height:1.85;overflow:hidden;',
+      header: 'display:flex;align-items:center;gap:8px;background:#FFEDD5;color:#C2410C;font-weight:700;padding:10px 22px;border-bottom:1px solid #FED7AA;',
+      body: 'padding:14px 22px 16px;'
+    },
     table: 'width:100%;border-collapse:collapse;margin:22px 0;font-size:14px;line-height:1.7;border:1px solid #FECACA;', th: 'font-weight:700;padding:10px 12px;text-align:left;border:1px solid #FCA5A5;', td: 'padding:10px 12px;border:1px solid #FECACA;', rowEven: '#FFFFFF', rowOdd: '#FFF7F7',
     codeBlock: "background:#1C1917;color:#FAFAF9;border-top:4px solid #DC2626;padding:16px 18px;margin:20px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'JetBrains Mono','Consolas',monospace;", inlineCode: "background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:0.9em;font-family:'JetBrains Mono','Consolas',monospace;",
     image: 'max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;', imageWrap: 'padding:6px;border:1px solid #FECACA;background:#FFFFFF;border-radius:10px;margin:22px 0 8px;', strong: 'font-weight:700;color:#DC2626;', highlight: 'background:#FEE2E2;color:#991B1B;padding:2px 6px;border-radius:3px;font-weight:700;', link: 'color:#DC2626;text-decoration:underline;', hr: 'border:none;border-top:1px solid #FECACA;border-bottom:1px solid #FEE2E2;height:4px;margin:28px 0;'
@@ -51,6 +66,11 @@ export const BUILT_IN_THEMES = {
     defaults: { indent: false, headerBg: '#059669', h1Color: '#1A1A1A', h1Size: '24px', h2Color: '#1A1A1A', h2Size: '18px', h3Color: '#1A1A1A', h3Size: '15px', h4Color: '#555555', h4Size: '14px', font: "-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif", spacing: '1em' },
     container: 'max-width:677px;margin:0 auto;padding:22px 20px;box-sizing:border-box;background:#FFFDF5;color:#555555;border-left:1px dashed #D1D5DB;border-right:1px dashed #D1D5DB;', paragraph: 'font-size:14px;color:#555555;line-height:1.9;margin:0 0 18px;text-align:justify;', caption: 'font-size:11px;color:#999999;letter-spacing:1px;line-height:1.7;margin:7px 0 22px;text-align:center;text-indent:0;',
     blockquote: 'background:#F0FDF4;border-left:4px solid #059669;padding:14px 16px;margin:22px 0;color:#1A1A1A;font-size:14px;font-weight:600;line-height:1.8;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:14px;line-height:1.85;color:#555555;',
+    callout: {
+      container: 'background:#FFFEF8;border:1px dashed #86EFAC;border-left:7px solid #059669;padding:0;margin:22px 0;color:#1A1A1A;font-size:14px;line-height:1.8;box-shadow:5px 5px 0 #D1FAE5;overflow:hidden;',
+      header: 'display:flex;align-items:center;gap:8px;background:#F0FDF4;color:#047857;font-weight:800;padding:9px 16px;border-bottom:1px dashed #A7F3D0;letter-spacing:.2px;',
+      body: 'padding:13px 16px 15px;'
+    },
     table: 'width:100%;border-collapse:collapse;margin:22px 0;font-size:13px;line-height:1.7;background:#FFFEF8;border:1px solid #E5E7EB;', th: 'font-weight:800;padding:9px 11px;text-align:left;border:1px dashed #A7F3D0;letter-spacing:1px;', td: 'padding:9px 11px;border:1px dashed #D1D5DB;', rowEven: '#FFFEF8', rowOdd: '#F0FDF4',
     codeBlock: "background:#1A1A1A;color:#F9FAFB;border-left:8px solid #059669;padding:15px 17px;margin:22px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'JetBrains Mono','Consolas',monospace;", inlineCode: "background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:0.9em;font-family:'JetBrains Mono','Consolas',monospace;",
     image: 'max-width:100%;height:auto;display:block;margin:0 auto;', imageWrap: 'background:#FFFEF8;border:1px solid #EEEEEE;padding:6px;margin:22px 0 8px;box-shadow:5px 5px 0 #A7F3D0;', strong: 'font-weight:700;color:#059669;', highlight: 'background:linear-gradient(120deg,#A7F3D0 0%,rgba(167,243,208,0) 100%);padding:0 4px;font-weight:600;color:#111111;', link: 'color:#059669;text-decoration:underline;', hr: 'border:none;border-top:2px dashed #1A1A1A;margin:28px 0;'
@@ -60,6 +80,11 @@ export const BUILT_IN_THEMES = {
     defaults: { indent: false, headerBg: '#1E1F23', h1Color: '#23251D', h1Size: '24px', h2Color: '#23251D', h2Size: '18px', h3Color: '#23251D', h3Size: '16px', h4Color: '#65675E', h4Size: '14px', font: "'IBM Plex Sans',-apple-system,system-ui,'PingFang SC','Microsoft YaHei',sans-serif", spacing: '1em' },
     container: 'max-width:677px;margin:0 auto;padding:22px 18px;box-sizing:border-box;background:#FDFDF8;color:#4D4F46;border:1px solid #BFC1B7;border-radius:6px;', paragraph: 'font-size:14px;color:#4D4F46;line-height:1.9;margin:0 0 18px;text-align:justify;', caption: 'font-size:11px;color:#9EA096;line-height:1.7;margin:7px 0 22px;text-align:center;text-indent:0;',
     blockquote: 'background:#EEEFE9;border:1px solid #BFC1B7;border-left:4px solid #ED7B2F;border-radius:6px;padding:15px 17px;margin:22px 0;color:#23251D;font-size:14px;line-height:1.85;', list: 'padding-left:1.5em;margin:14px 0 22px;font-size:14px;line-height:1.85;color:#4D4F46;',
+    callout: {
+      container: 'background:#F3F5EF;border:1px solid #BFC1B7;border-left:4px solid #5E7D6A;border-radius:6px;padding:0;margin:22px 0;color:#30352D;font-size:14px;line-height:1.85;overflow:hidden;',
+      header: 'display:flex;align-items:center;gap:8px;background:#E7ECE2;color:#4F6B5A;font-weight:700;padding:9px 17px;border-bottom:1px solid #BFC1B7;',
+      body: 'padding:13px 17px 15px;'
+    },
     table: 'width:100%;border-collapse:collapse;margin:22px 0;font-size:13px;line-height:1.7;background:#FDFDF8;border:1px solid #BFC1B7;', th: 'font-weight:800;padding:10px 12px;text-align:left;border:1px solid #BFC1B7;letter-spacing:.5px;', td: 'padding:10px 12px;border:1px solid #BFC1B7;', rowEven: '#FDFDF8', rowOdd: '#EEEFE9',
     codeBlock: "background:#1E1F23;color:#FDFDF8;border-radius:6px;padding:16px 18px;margin:22px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;", inlineCode: 'background:#EEEFE9;color:#23251D;padding:2px 6px;border-radius:4px;font-size:0.9em;border:1px solid #B6B7AF;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;',
     image: 'max-width:100%;height:auto;display:block;margin:0 auto;border-radius:4px;', imageWrap: 'background:#FDFDF8;border:1px solid #BFC1B7;border-radius:6px;padding:6px;margin:22px 0 8px;', strong: 'font-weight:700;color:#23251D;', highlight: 'background:#EEEFE9;padding:1px 5px;border-radius:4px;font-weight:600;color:#23251D;border:1px solid #BFC1B7;', link: 'color:#B17816;text-decoration:underline;text-decoration-color:#ED7B2F;', hr: 'border:none;border-top:1px solid #BFC1B7;margin:28px 0;'
