@@ -22,6 +22,8 @@ const INLINE_CODE_RE = /`([^`]+)`/g
 const LINK_RE = /\[([^\]]*)\]\(([^)]+)\)/g
 
 const LI_STYLE = 'margin-bottom:6px;'
+// Guards against pathological indentation producing endless nesting.
+const MAX_LIST_DEPTH = 8
 
 const CALLOUT_META = {
   note: { label: 'Note', icon: '✎' },
@@ -291,42 +293,57 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
   let tableSepIndex = -1
   let inIndentCode = false
   let indentCodeBuffer = []
+  // listRoot holds the whole list block as a tree; listStack tracks the lists
+  // that are still open, from the outermost one to the deepest.
+  let listRoot = null
   let listStack = []
-  let listIndentBase = -1
   const headingCounts = { 1: 0, 2: 0, 3: 0, 4: 0 }
 
-  function renderListItem(text, type, checked) {
-    if (type === 'raw') return text
-    const inner = renderInline(text, theme)
-    if (type === 'task') {
-      const chk = checked ? 'checked' : ''
-      return `<li style="${LI_STYLE}list-style:none;display:flex;align-items:flex-start;gap:6px;"><input type="checkbox" ${chk} disabled style="margin-top:0.35em;flex-shrink:0;" /> <span>${inner}</span></li>`
+  function renderListItem(item, level) {
+    if (item.type === 'raw') return item.text
+    const inner = renderInline(item.text, theme)
+    let childHtml = ''
+    for (const child of item.children) {
+      childHtml += renderList(child, level + 1)
     }
-    return `<li style="${LI_STYLE}">${inner}</li>`
+    if (item.type === 'task') {
+      const chk = item.checked ? 'checked' : ''
+      return `<li style="${LI_STYLE}list-style:none;"><span style="display:flex;align-items:flex-start;gap:6px;"><input type="checkbox" ${chk} disabled style="margin-top:0.35em;flex-shrink:0;" /><span>${inner}</span></span>${childHtml}</li>`
+    }
+    return `<li style="${LI_STYLE}">${inner}${childHtml}</li>`
+  }
+
+  function renderList(list, level) {
+    // Tailwind Preflight resets ul/ol to list-style:none; restore the
+    // semantic markers explicitly so bullets and ordered numbers render.
+    const marker = list.tag === 'ol' ? 'list-style-type:decimal;list-style-position:outside;' : 'list-style-type:disc;list-style-position:outside;'
+    const margin = level === 0 ? 'margin:12px 0;' : 'margin:6px 0 0;'
+    let html = `<${list.tag} style="${theme.list}${marker}${margin}">`
+    for (const item of list.items) {
+      html += renderListItem(item, level)
+    }
+    html += `</${list.tag}>`
+    return html
   }
 
   function flushListStack() {
     if (!listStack.length) return
-    function renderLevel(level) {
-      if (level >= listStack.length) return ''
-      const l = listStack[level]
-      const tag = l.tag
-      const style = theme.list
-      // Tailwind Preflight resets ul/ol to list-style:none; restore the
-      // semantic markers explicitly so bullets and ordered numbers render.
-      const marker = tag === 'ol' ? 'list-style-type:decimal;list-style-position:outside;' : 'list-style-type:disc;list-style-position:outside;'
-      const margin = level === 0 ? 'margin:12px 0;' : 'margin:0;'
-      let html = `<${tag} style="${style}${marker}${margin}">`
-      for (const item of l.items) {
-        html += renderListItem(item.text, item.type, item.checked)
-      }
-      html += renderLevel(level + 1)
-      html += `</${tag}>`
-      return html
-    }
-    parts.push(renderLevel(0))
+    if (listRoot && listRoot.items.length) parts.push(renderList(listRoot, 0))
+    listRoot = null
     listStack = []
-    listIndentBase = -1
+  }
+
+  function openRootList(tag, indent) {
+    listRoot = { tag, items: [] }
+    listStack = [{ list: listRoot, indent }]
+  }
+
+  function openChildList(tag, indent) {
+    const parent = listStack[listStack.length - 1]
+    const parentItem = parent.list.items[parent.list.items.length - 1]
+    const child = { tag, items: [] }
+    parentItem.children.push(child)
+    listStack.push({ list: child, indent })
   }
 
   function flushCodeBlock() {
@@ -454,35 +471,40 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
         inIndentCode = false
       }
       const indent = getIndent(line)
-      if (listIndentBase < 0) listIndentBase = indent
-
-      const level = Math.round((indent - listIndentBase) / 2)
-      if (level < 0) {
-        flushListStack()
-        listIndentBase = indent
-      }
-
       const listTag = c.type === 'ol' ? 'ol' : 'ul'
 
-      // Ensure stack has enough levels
-      while (listStack.length <= level) {
-        listStack.push({ tag: listStack.length > 0 ? listStack[listStack.length - 1].tag : listTag, items: [] })
-      }
-      // Trim excess levels
-      if (listStack.length > level + 1) {
-        listStack.length = level + 1
-      }
-
-      // If type changed at same level, flush and restart
-      if (listStack[level].tag !== listTag && listStack[level].items.length > 0) {
-        flushListStack()
-        listIndentBase = indent
-        while (listStack.length <= level) {
-          listStack.push({ tag: listTag, items: [] })
+      if (!listStack.length) {
+        openRootList(listTag, indent)
+      } else {
+        // Close every open list that is indented deeper than this line.
+        while (listStack.length > 1 && indent < listStack[listStack.length - 1].indent) {
+          listStack.pop()
+        }
+        const top = listStack[listStack.length - 1]
+        if (indent > top.indent && top.list.items.length && listStack.length < MAX_LIST_DEPTH) {
+          openChildList(listTag, indent)
+        } else {
+          // The outermost list keeps the leftmost indent seen so far, so a
+          // block that starts indented and later dedents stays one list.
+          if (indent < top.indent) top.indent = indent
+          if (top.list.tag !== listTag && top.list.items.length) {
+            if (listStack.length === 1) {
+              flushListStack()
+              openRootList(listTag, indent)
+            } else {
+              listStack.pop()
+              openChildList(listTag, indent)
+            }
+          }
         }
       }
 
-      listStack[level].items.push({ text: c.text, type: c.type === 'task' ? 'task' : listTag, checked: c.checked })
+      listStack[listStack.length - 1].list.items.push({
+        text: c.text,
+        type: c.type === 'task' ? 'task' : listTag,
+        checked: c.checked,
+        children: []
+      })
 
       // If next line is non-list non-empty, flush
       if (!isListType(nextC.type) && nextC.type !== 'empty') {
