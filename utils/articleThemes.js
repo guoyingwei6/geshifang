@@ -23,7 +23,7 @@ export const BUILT_IN_THEMES = {
     th: 'font-weight:600;padding:10px 14px;text-align:left;border-right:1px solid rgba(255,255,255,0.15);',
     td: 'padding:10px 14px;border:1px solid #E5E6EB;',
     rowEven: '#FFFFFF', rowOdd: '#F7F8FA',
-    codeBlock: "background:#1E1E2E;color:#FFFFFF;border-radius:6px;padding:14px 16px;margin:16px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;",
+    codeBlock: "background:#1E1E2E;color:#FFFFFF;border-radius:6px;padding:14px 16px;margin:16px 0;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-all;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;",
     inlineCode: "background:#F7F0EE;color:#D43D2A;padding:1px 5px;border-radius:3px;font-size:0.9em;font-family:'JetBrains Mono','Fira Code','Consolas',monospace;",
     image: 'max-width:100%;height:auto;display:block;margin:18px auto 8px auto;border-radius:4px;',
     imageWrap: '', strong: 'font-weight:700;color:#D94A1E;', highlight: 'background:#FFF1EE;color:#D43D2A;padding:0 3px;border-radius:2px;',
@@ -42,7 +42,7 @@ export const BUILT_IN_THEMES = {
     },
     list: 'padding-left:1.45em;margin:14px 0 20px;font-size:14px;line-height:1.85;color:#374151;', table: 'width:100%;border-collapse:collapse;margin:20px 0;font-size:13px;line-height:1.7;border:1px solid #D1FAE5;',
     th: 'font-weight:700;padding:10px 12px;text-align:left;border:1px solid #A7F3D0;', td: 'padding:10px 12px;border:1px solid #D1FAE5;', rowEven: '#FFFFFF', rowOdd: '#F0FDF4',
-    codeBlock: "background:#111827;color:#E5E7EB;border-left:4px solid #10B981;padding:15px 17px;margin:18px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'JetBrains Mono','Consolas',monospace;",
+    codeBlock: "background:#111827;color:#E5E7EB;border-left:4px solid #10B981;padding:15px 17px;margin:18px 0;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-all;font-family:'JetBrains Mono','Consolas',monospace;",
     inlineCode: "background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:0.9em;font-family:'JetBrains Mono','Consolas',monospace;",
     image: 'max-width:100%;height:auto;display:block;margin:0 auto;border-radius:0;', imageWrap: 'padding:6px;background:#F0FDF4;border:1px solid #D1FAE5;margin:20px 0 8px;',
     strong: 'font-weight:700;color:#059669;', highlight: 'background:linear-gradient(120deg,#A7F3D0 0%,rgba(167,243,208,0) 100%);padding:0 4px;font-weight:600;color:#111827;', link: 'color:#059669;text-decoration:underline;', hr: 'border:none;border-top:2px solid #A7F3D0;margin:26px 0;'
@@ -58,7 +58,7 @@ export const BUILT_IN_THEMES = {
       body: 'padding:14px 22px 16px;'
     },
     table: 'width:100%;border-collapse:collapse;margin:22px 0;font-size:14px;line-height:1.7;border:1px solid #FECACA;', th: 'font-weight:700;padding:10px 12px;text-align:left;border:1px solid #FCA5A5;', td: 'padding:10px 12px;border:1px solid #FECACA;', rowEven: '#FFFFFF', rowOdd: '#FFF7F7',
-    codeBlock: "background:#1C1917;color:#FAFAF9;border-top:4px solid #DC2626;padding:16px 18px;margin:20px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'JetBrains Mono','Consolas',monospace;", inlineCode: "background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:0.9em;font-family:'JetBrains Mono','Consolas',monospace;",
+    codeBlock: "background:#1C1917;color:#FAFAF9;border-top:4px solid #DC2626;padding:16px 18px;margin:20px 0;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-all;font-family:'JetBrains Mono','Consolas',monospace;", inlineCode: "background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:0.9em;font-family:'JetBrains Mono','Consolas',monospace;",
     image: 'max-width:100%;height:auto;display:block;margin:0 auto;border-radius:8px;', imageWrap: 'padding:6px;border:1px solid #FECACA;background:#FFFFFF;border-radius:10px;margin:22px 0 8px;', strong: 'font-weight:700;color:#DC2626;', highlight: 'background:#FEE2E2;color:#991B1B;padding:2px 6px;border-radius:3px;font-weight:700;', link: 'color:#DC2626;text-decoration:underline;', hr: 'border:none;border-top:1px solid #FECACA;border-bottom:1px solid #FEE2E2;height:4px;margin:28px 0;'
   },
   'moyu-ticket': {
@@ -72,7 +72,7 @@ export const BUILT_IN_THEMES = {
       body: 'padding:13px 16px 15px;'
     },
     table: 'width:100%;border-collapse:collapse;margin:22px 0;font-size:13px;line-height:1.7;background:#FFFEF8;border:1px solid #E5E7EB;', th: 'font-weight:800;padding:9px 11px;text-align:left;border:1px dashed #A7F3D0;letter-spacing:1px;', td: 'padding:9px 11px;border:1px dashed #D1D5DB;', rowEven: '#FFFEF8', rowOdd: '#F0FDF4',
-    codeBlock: "background:#1A1A1A;color:#F9FAFB;border-left:8px solid #059669;padding:15px 17px;margin:22px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:'JetBrains Mono','Consolas',monospace;", inlineCode: "background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:0.9em;font-family:'JetBrains Mono','Consolas',monospace;",
+    codeBlock: "background:#1A1A1A;color:#F9FAFB;border-left:8px solid #059669;padding:15px 17px;margin:22px 0;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-all;font-family:'JetBrains Mono','Consolas',monospace;", inlineCode: "background:#F3F4F6;color:#1F2937;padding:2px 6px;border-radius:4px;font-size:0.9em;font-family:'JetBrains Mono','Consolas',monospace;",
     image: 'max-width:100%;height:auto;display:block;margin:0 auto;', imageWrap: 'background:#FFFEF8;border:1px solid #EEEEEE;padding:6px;margin:22px 0 8px;box-shadow:5px 5px 0 #A7F3D0;', strong: 'font-weight:700;color:#059669;', highlight: 'background:linear-gradient(120deg,#A7F3D0 0%,rgba(167,243,208,0) 100%);padding:0 4px;font-weight:600;color:#111111;', link: 'color:#059669;text-decoration:underline;', hr: 'border:none;border-top:2px dashed #1A1A1A;margin:28px 0;'
   },
   'olive-journal': {
@@ -86,7 +86,7 @@ export const BUILT_IN_THEMES = {
       body: 'padding:13px 17px 15px;'
     },
     table: 'width:100%;border-collapse:collapse;margin:22px 0;font-size:13px;line-height:1.7;background:#FDFDF8;border:1px solid #BFC1B7;', th: 'font-weight:800;padding:10px 12px;text-align:left;border:1px solid #BFC1B7;letter-spacing:.5px;', td: 'padding:10px 12px;border:1px solid #BFC1B7;', rowEven: '#FDFDF8', rowOdd: '#EEEFE9',
-    codeBlock: "background:#1E1F23;color:#FDFDF8;border-radius:6px;padding:16px 18px;margin:22px 0;font-size:13px;line-height:1.7;overflow-x:auto;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;", inlineCode: 'background:#EEEFE9;color:#23251D;padding:2px 6px;border-radius:4px;font-size:0.9em;border:1px solid #B6B7AF;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;',
+    codeBlock: "background:#1E1F23;color:#FDFDF8;border-radius:6px;padding:16px 18px;margin:22px 0;font-size:13px;line-height:1.7;overflow-x:auto;white-space:pre-wrap;word-break:break-all;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;", inlineCode: 'background:#EEEFE9;color:#23251D;padding:2px 6px;border-radius:4px;font-size:0.9em;border:1px solid #B6B7AF;font-family:ui-monospace,Menlo,Monaco,Consolas,monospace;',
     image: 'max-width:100%;height:auto;display:block;margin:0 auto;border-radius:4px;', imageWrap: 'background:#FDFDF8;border:1px solid #BFC1B7;border-radius:6px;padding:6px;margin:22px 0 8px;', strong: 'font-weight:700;color:#23251D;', highlight: 'background:#EEEFE9;padding:1px 5px;border-radius:4px;font-weight:600;color:#23251D;border:1px solid #BFC1B7;', link: 'color:#B17816;text-decoration:underline;text-decoration-color:#ED7B2F;', hr: 'border:none;border-top:1px solid #BFC1B7;margin:28px 0;'
   }
 }

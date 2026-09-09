@@ -97,7 +97,7 @@ function exportPDF() {
     th, td { border: 1px solid #D0D0D0; padding: 8px 12px; text-align: left; }
     th { background: #D94A1E; color: #fff; font-weight: 600; }
     tr:nth-child(even) td { background: #F8F9FA; }
-    pre { background: #F5F5F7; border-radius: 6px; padding: 14px 18px; overflow-x: auto; font-size: 13px; line-height: 1.6; }
+    pre { background: #F5F5F7; border-radius: 6px; padding: 14px 18px; overflow-x: auto; font-size: 13px; line-height: 1.6; white-space: pre-wrap; word-break: break-all; }
     code { font-family: 'JetBrains Mono','Consolas',monospace; font-size: 0.9em; }
     blockquote { background: #F8FAFC; border: 1px solid #E5E7EB; border-left: 3px solid #CBD5E1; margin: 18px 0; padding: 14px 18px; border-radius: 4px; color: #4B5563; }
     hr { border: none; border-top: 1px solid #E0E0E0; margin: 24px 0; }

@@ -264,6 +264,18 @@ function isListType(t) {
   return t === 'ol' || t === 'ul' || t === 'task'
 }
 
+function isProbableCodeLine(text) {
+  if (!text) return false
+  if (/^[\u4e00-\u9fa5\u3000-\u303f\uff00-\uffef]/.test(text)) return false
+  if (/^[A-Z][a-zA-Z\s.-]+,\s*[A-Z]/.test(text) && /\(\d{4}\)/.test(text)) return false
+  if (/^(?:const|let|var|function|def|import|export|class|return|if|for|while|public|private|static|async|await|try|catch|throw|new|package|include)\b/.test(text)) return true
+  if (/^(?:\/\/|\/\*|#|<!--|--|\$)/.test(text)) return true
+  if (/^(?:curl|docker|npm|yarn|pnpm|git|python|python3|node|npx|pip|brew|bash|sh|make|gcc|cargo|go|rustc)\b/.test(text)) return true
+  if (/^(?:SELECT|INSERT|UPDATE|DELETE|CREATE|ALTER|DROP|FROM|WHERE)\b/i.test(text)) return true
+  if (/[{}();]|=>|::|==|!=|\+\+|--|&&|\|\||<-|->|<\/|\/>/.test(text)) return true
+  return false
+}
+
 export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D94836', h1Size = '21px', h2Color = '#E25A47', h2Size = '18px', h3Color = '#D94836', h3Size = '16px', h4Color = '#B85A47', h4Size = '15px', themeId = 'classic') {
   if (!rawText || typeof rawText !== 'string') return ''
   const theme = getArticleTheme(themeId)
@@ -320,7 +332,7 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
   function flushCodeBlock() {
     if (!codeBuffer.length) return
     const code = codeBuffer.join('\n')
-    parts.push(`<pre style="${theme.codeBlock}"><code style="background:transparent;color:inherit;">${escapeHtml(code)}</code></pre>`)
+    parts.push(`<pre style="${theme.codeBlock}"><code style="background:transparent;color:inherit;white-space:pre-wrap;word-break:break-all;">${escapeHtml(code)}</code></pre>`)
     codeBuffer = []
     codeLang = ''
   }
@@ -337,7 +349,7 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
   function flushIndentCode() {
     if (!indentCodeBuffer.length) return
     const code = indentCodeBuffer.map(l => l.replace(/^(?:\t|    )/, '')).join('\n')
-    parts.push(`<pre style="${theme.codeBlock}"><code style="background:transparent;color:inherit;">${escapeHtml(code)}</code></pre>`)
+    parts.push(`<pre style="${theme.codeBlock}"><code style="background:transparent;color:inherit;white-space:pre-wrap;word-break:break-all;">${escapeHtml(code)}</code></pre>`)
     indentCodeBuffer = []
   }
 
@@ -389,31 +401,12 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
 
     flushTable()
 
-    if (CODE_INDENT_RE.test(line)) {
-      if (!inIndentCode) {
-        flushListStack()
-        inIndentCode = true
-        indentCodeBuffer = []
-      }
-      indentCodeBuffer.push(line)
-      const nextLine3 = i + 1 < lines.length ? lines[i + 1] : ''
-      if (nextLine3.trim() && !CODE_INDENT_RE.test(nextLine3)) {
+    const quoteMatch = line.match(QUOTE_RE)
+    if (quoteMatch) {
+      if (inIndentCode) {
         flushIndentCode()
         inIndentCode = false
       }
-      continue
-    }
-    if (inIndentCode) {
-      if (!line.trim()) {
-        indentCodeBuffer.push(line)
-        continue
-      }
-      flushIndentCode()
-      inIndentCode = false
-    }
-
-    const quoteMatch = line.match(QUOTE_RE)
-    if (quoteMatch) {
       flushListStack()
       const quotedLines = [quoteMatch[1]]
       let quoteEnd = i + 1
@@ -438,16 +431,28 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
 
     if (c.type === 'empty') {
       flushListStack()
+      if (inIndentCode) {
+        indentCodeBuffer.push(line)
+        continue
+      }
       continue
     }
 
     if (c.type === 'hr') {
+      if (inIndentCode) {
+        flushIndentCode()
+        inIndentCode = false
+      }
       flushListStack()
       parts.push(`<hr style="${theme.hr}" />`)
       continue
     }
 
     if (isListType(c.type)) {
+      if (inIndentCode) {
+        flushIndentCode()
+        inIndentCode = false
+      }
       const indent = getIndent(line)
       if (listIndentBase < 0) listIndentBase = indent
 
@@ -482,6 +487,38 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
       // If next line is non-list non-empty, flush
       if (!isListType(nextC.type) && nextC.type !== 'empty') {
         flushListStack()
+      }
+      continue
+    }
+
+    if (inIndentCode) {
+      if (CODE_INDENT_RE.test(line)) {
+        indentCodeBuffer.push(line)
+        const nextLine3 = i + 1 < lines.length ? lines[i + 1] : ''
+        if (nextLine3.trim() && !CODE_INDENT_RE.test(nextLine3)) {
+          flushIndentCode()
+          inIndentCode = false
+        }
+        continue
+      }
+      flushIndentCode()
+      inIndentCode = false
+    }
+
+    const prevLine = i > 0 ? lines[i - 1] : ''
+    const canStartIndentCode = CODE_INDENT_RE.test(line) &&
+      (!prevLine.trim() || inCodeBlock) &&
+      c.type === 'p' &&
+      isProbableCodeLine(c.text)
+
+    if (canStartIndentCode) {
+      flushListStack()
+      inIndentCode = true
+      indentCodeBuffer = [line]
+      const nextLine3 = i + 1 < lines.length ? lines[i + 1] : ''
+      if (nextLine3.trim() && !CODE_INDENT_RE.test(nextLine3)) {
+        flushIndentCode()
+        inIndentCode = false
       }
       continue
     }

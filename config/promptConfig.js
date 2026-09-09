@@ -57,7 +57,7 @@ export const systemPrompt = `# 角色
 </ol>
 
 ## 代码块
-<pre style="background:#1E1E2E; color:#FFFFFF; border-radius:6px; padding:14px 16px; margin:16px 0; font-size:13px; line-height:1.7; overflow-x:auto; font-family:&quot;JetBrains Mono&quot;,&quot;Fira Code&quot;,&quot;Consolas&quot;,monospace;"><code>代码内容</code></pre>
+<pre style="background:#1E1E2E; color:#FFFFFF; border-radius:6px; padding:14px 16px; margin:16px 0; font-size:13px; line-height:1.7; overflow-x:auto; white-space:pre-wrap; word-break:break-all; font-family:&quot;JetBrains Mono&quot;,&quot;Fira Code&quot;,&quot;Consolas&quot;,monospace;"><code>代码内容</code></pre>
 
 # 输出格式
 - 纯 HTML 字符串，多个元素直接拼接
