@@ -72,23 +72,38 @@ function escapeHtml(text) {
   return text.replace(/[&<>"']/g, m => map[m])
 }
 
+function renderFormula(latex, display = false) {
+  const url = `https://latex.codecogs.com/svg.image?${encodeURIComponent(latex)}`
+  const image = `<img data-gs-formula="true" src="${url}" alt="${escapeHtml(latex)}" style="display:inline-block;vertical-align:middle;margin:0 2px;max-width:100%;height:auto;" />`
+  return display ? `<section style="text-align:center;margin:16px 0;">${image}</section>` : image
+}
+
 const IMG_PH = '\u0000IMG\u0000'
 const CODE_PH = '\u0000COD\u0000'
 const LINK_PH = '\u0000LNK\u0000'
 const IMG_PH_RE = /\u0000IMG\u0000/g
 const CODE_PH_RE = /\u0000COD\u0000/g
 const LINK_PH_RE = /\u0000LNK\u0000/g
+const MATH_PH = '\u0000MATH\u0000'
+const MATH_PH_RE = /\u0000MATH\u0000/g
+const INLINE_MATH_RE = /(?<![\\$])\$(?!\$)([^$\n]+?)(?<!\\)\$(?![$\d])/g
 
 function extractAll(text) {
-  const images = [], codes = [], links = []
+  const images = [], codes = [], links = [], formulas = []
   const noCode = text.replace(INLINE_CODE_RE, (m, c) => { codes.push(c); return CODE_PH })
   const noImgs = noCode.replace(IMG_RE, (m, alt, src) => { images.push({ alt, src }); return IMG_PH })
   const noLinks = noImgs.replace(LINK_RE, (m, text, href) => { links.push({ text, href }); return LINK_PH })
-  return { text: noLinks, images, codes, links }
+  const noMath = noLinks.replace(INLINE_MATH_RE, (match, latex) => {
+    if (latex !== latex.trim()) return match
+    formulas.push(latex)
+    return MATH_PH
+  })
+  return { text: noMath, images, codes, links, formulas }
 }
 
-function restoreAll(text, images, codes, links, theme) {
-  let li = 0, ii = 0, ci = 0
+function restoreAll(text, images, codes, links, formulas, theme) {
+  let li = 0, ii = 0, ci = 0, mi = 0
+  text = text.replace(MATH_PH_RE, () => renderFormula(formulas[mi++]))
   const withLinks = text.replace(LINK_PH_RE, () => {
     const link = links[li++]
     return `<a href="${escapeHtml(link.href)}" style="${theme.link}">${renderBold(escapeHtml(link.text), theme)}</a>`
@@ -110,12 +125,12 @@ function restoreAll(text, images, codes, links, theme) {
 }
 
 function renderInline(text, theme) {
-  const { text: extracted, images, codes, links } = extractAll(text)
+  const { text: extracted, images, codes, links, formulas } = extractAll(text)
   const escaped = escapeHtml(extracted)
   const highlighted = renderHighlight(escaped, theme)
   const bolded = renderBold(highlighted, theme)
   const striked = renderStrike(bolded)
-  return restoreAll(striked, images, codes, links, theme)
+  return restoreAll(striked, images, codes, links, formulas, theme)
 }
 
 function getCalloutMeta(type) {
@@ -390,6 +405,28 @@ export function formatLocally(rawText, headerBgColor = '#D94A1E', h1Color = '#D9
     if (inCodeBlock) {
       codeBuffer.push(line)
       continue
+    }
+
+    // Only consume a complete math block; leave unmatched delimiters visible.
+    if (!inIndentCode && !CODE_INDENT_RE.test(line) && line.trim().startsWith('$$')) {
+      const trimmed = line.trim()
+      let end = i
+      let latex = ''
+      if (trimmed.length > 4 && trimmed.endsWith('$$')) {
+        latex = trimmed.slice(2, -2).trim()
+      } else if (trimmed === '$$') {
+        end = i + 1
+        while (end < lines.length && lines[end].trim() !== '$$') end++
+        if (end < lines.length) latex = lines.slice(i + 1, end).join('\n').trim()
+      }
+      if (latex) {
+        flushListStack()
+        flushTable()
+        inTable = false
+        parts.push(renderFormula(latex, true))
+        i = end
+        continue
+      }
     }
 
     if (isTableRow(line) || (inTable && !line.trim())) {
