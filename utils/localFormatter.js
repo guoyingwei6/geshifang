@@ -73,7 +73,7 @@ function escapeHtml(text) {
 }
 
 function renderFormula(latex, display = false) {
-  const url = `https://latex.codecogs.com/svg.image?${encodeURIComponent(latex)}`
+  const url = `https://latex.codecogs.com/png.image?${encodeURIComponent(latex)}`
   const image = `<img data-gs-formula="true" src="${url}" alt="${escapeHtml(latex)}" style="display:inline-block;vertical-align:middle;margin:0 2px;max-width:100%;height:auto;" />`
   return display ? `<section style="text-align:center;margin:16px 0;">${image}</section>` : image
 }

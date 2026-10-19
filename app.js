@@ -670,7 +670,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const latex = prompt('输入 LaTeX 公式（不含 $$）：')
     if (latex) {
       saveSnapshot()
-      const url = `https://latex.codecogs.com/svg.image?${encodeURIComponent(latex)}`
+      const url = `https://latex.codecogs.com/png.image?${encodeURIComponent(latex)}`
       preview.innerHTML += `<img src="${url}" style="display:inline-block;vertical-align:middle;margin:4px;max-width:100%;" />`
     }
   })
